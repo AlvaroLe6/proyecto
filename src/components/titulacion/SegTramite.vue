@@ -78,32 +78,138 @@ const submit = handleSubmit(async (values) => {
 export default {
   data() {
     return {
-      tickLabels: {
-          0: 'Etapa 1',
-          1: 'Etapa 2',
-          2: 'Etapa 3',
-          3: 'Etapa 4',
-          4: 'Etapa 5',
-          5: 'Etapa 6',
-
+      ItemsEtapas: [
+        "Etapa 1",
+        "Etapa 2",
+        "Etapa 3",
+        "Etapa 4",
+        "Etapa 5",
+        "Etapa 6",
+      ],
+      itemsEtapa1: [
+        {
+          id: 1,
+          title: "Aprobar todos los módulos",
+          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
         },
-
-        /*   0: 'Entrega de monografia',
-          1: 'revisión de monografia',
-          2: 'Presentación de documentacion',
-          3: 'Entrega final',
-          4: 'En tramite',
-          5: 'Titulo listo?',*/
+        {
+          id: 2,
+          title: "Estar con sus cuotas al dia",
+          subtitle:
+            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+        },
+        {
+          id: 3,
+          title: "Presentación de monografia",
+          subtitle:
+            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
+        },
+      ],
+      itemsEtapa2: [
+        {
+          id: 1,
+          title: "Item 1",
+          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+        },
+        {
+          id: 2,
+          title: "Item 2",
+          subtitle:
+            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+        },
+        {
+          id: 3,
+          title: "Item 3",
+          subtitle:
+            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
+        },
+      ],
+      itemsEtapa3: [
+        {
+          id: 1,
+          title: "Item 1",
+          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+        },
+        {
+          id: 2,
+          title: "Item 2",
+          subtitle:
+            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+        },
+        {
+          id: 3,
+          title: "Item 3",
+          subtitle:
+            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
+        },
+      ],
+      itemsEtapa4: [
+        {
+          id: 1,
+          title: "Item 1",
+          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+        },
+        {
+          id: 2,
+          title: "Item 2",
+          subtitle:
+            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+        },
+        {
+          id: 3,
+          title: "Item 3",
+          subtitle:
+            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
+        },
+      ],
+      itemsEtapa5: [
+        {
+          id: 1,
+          title: "Item 1",
+          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+        },
+        {
+          id: 2,
+          title: "Item 2",
+          subtitle:
+            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+        },
+        {
+          id: 3,
+          title: "Item 3",
+          subtitle:
+            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
+        },
+      ],
+      itemsEtapa6: [
+        {
+          id: 1,
+          title: "Item 1",
+          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+        },
+        {
+          id: 2,
+          title: "Item 2",
+          subtitle:
+            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+        },
+        {
+          id: 3,
+          title: "Item 3",
+          subtitle:
+            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
+        },
+      ],
 
       showDetails: false,
-      progress: 25
+      progress: 25,
     };
   },
   methods: {
     toggleDetails() {
       this.showDetails = !this.showDetails;
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -300,25 +406,104 @@ export default {
               </v-row>
               <v-row>
                 <v-col>
-                  <v-card>
+                  <v-card class="card-detalle">
                     <v-btn color="green" @click="toggleDetails">{{
                       showDetails ? "Ocultar Detalle" : "Ver Más Detalle"
                     }}</v-btn>
 
-                    <div v-if="showDetails">
+                    <div class="div-detalle" v-if="showDetails">
                       <h2>Proceso externo de titulación</h2>
                       <div class="text-caption">Etapas</div>
-                <v-slider
-                disabled
-                v-model="progress"
-                  :max="5"
-                  :ticks="tickLabels"
-                  show-ticks="always"
-                  step="1"
-                  tick-size="6"
-                  color="orange"
-                >
-              </v-slider>
+                      <v-stepper :items="ItemsEtapas">
+                        <template v-slot:item.1>
+                          <v-card title="Entrega de monografia" flat>
+                            <v-list lines="one">
+                              <v-list-item v-for="itemsEtapa1 in itemsEtapa1" :key="itemsEtapa1.id">
+                                <v-list-item-content>
+                                  <v-list-item-title>
+                                    <v-icon 
+                                    color="green"
+                                    icon="fa-check" >
+                                  </v-icon>
+                                    
+                                    {{
+                                    itemsEtapa1.title
+                                  }}</v-list-item-title>
+                                  <v-list-item-subtitle>
+                                    {{
+                                    itemsEtapa1.subtitle
+                                  }}</v-list-item-subtitle>
+                                </v-list-item-content>
+                              </v-list-item>
+                            </v-list>
+                          </v-card>
+                        </template>
+
+                        <template v-slot:item.2>
+                          <v-card title="Revisión de monografia" flat>
+                            <v-list lines="one">
+                              <v-list-item
+                                v-for="n in 3"
+                                :key="n"
+                                :title="'Item ' + n"
+                                subtitle="Lorem ipsum dolor sit amet consectetur adipisicing elit"
+                              ></v-list-item>
+                            </v-list>
+                          </v-card>
+                        </template>
+
+                        <template v-slot:item.3>
+                          <v-card title="Presentación de documentacion" flat>
+                            <v-list lines="one">
+                              <v-list-item
+                                v-for="n in 3"
+                                :key="n"
+                                :title="'Item ' + n"
+                                subtitle="Lorem ipsum dolor sit amet consectetur adipisicing elit"
+                              ></v-list-item>
+                            </v-list>
+                          </v-card>
+                        </template>
+
+                        <template v-slot:item.4>
+                          <v-card title="Entrega final" flat>
+                            <v-list lines="one">
+                              <v-list-item
+                                v-for="n in 3"
+                                :key="n"
+                                :title="'Item ' + n"
+                                subtitle="Lorem ipsum dolor sit amet consectetur adipisicing elit"
+                              ></v-list-item>
+                            </v-list>
+                          </v-card>
+                        </template>
+
+                        <template v-slot:item.5>
+                          <v-card title="En tramite" flat>
+                            <v-list lines="one">
+                              <v-list-item
+                                v-for="n in 3"
+                                :key="n"
+                                :title="'Item ' + n"
+                                subtitle="Lorem ipsum dolor sit amet consectetur adipisicing elit"
+                              ></v-list-item>
+                            </v-list>
+                          </v-card>
+                        </template>
+
+                        <template v-slot:item.6>
+                          <v-card title="Titulo listo?" flat>
+                            <v-list lines="one">
+                              <v-list-item
+                                v-for="n in 3"
+                                :key="n"
+                                :title="'Item ' + n"
+                                subtitle="Lorem ipsum dolor sit amet consectetur adipisicing elit"
+                              ></v-list-item>
+                            </v-list>
+                          </v-card>
+                        </template>
+                      </v-stepper>
                     </div>
                   </v-card>
                 </v-col>
@@ -351,5 +536,11 @@ export default {
   padding-right: 3%;
 }
 .text-field-results {
+}
+.card-detalle {
+  padding: 2%;
+}
+.div-detalle {
+  padding-top: 2%;
 }
 </style>
