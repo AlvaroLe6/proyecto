@@ -27,6 +27,11 @@ const router = createRouter({
       name: 'seg-tramite',
       component: () => import('../views/titulacion/SegTramiteView.vue')
     },
+    {
+      path: '/etapas-proceso-externo-t',
+      name: 'etapas-proceso-externo-t',
+      component: () => import('../views/titulacion/EtapasProcesoExternoTView.vue')
+    },
 
     {
       path: '/admin',
