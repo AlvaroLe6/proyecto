@@ -3,8 +3,11 @@ import { useForm, useField } from "vee-validate";
 import { collection, setDoc, getDocs, doc } from "firebase/firestore";
 import { useFirestore } from "vuefire";
 import { useRouter } from "vue-router";
-import {validationSchema} from "@/validation/contabilidadSchema.js";
+import {validationProcesoSchema} from "@/validation/EtapaProcesoExTSchema.js";
 import { ref } from "vue";
+
+
+
 
 const fechaFin = ref(new Date().toISOString().substr(0, 10));
 const db = useFirestore();
@@ -13,9 +16,7 @@ const textoCancelar = "Cancelar";
 const textoSeleccionar = "Seleccionar";
 
 const { handleSubmit } = useForm({
-  validationSchema: {
-    ...validationSchema,
-  },
+  validationSchema: validationProcesoSchema
 });
 
 const unidad = useField("unidad");
@@ -23,12 +24,12 @@ const actividad = useField("actividad");
 const tiempo = useField("tiempo");
 
 const submit = handleSubmit(async (values) => {
-  const {  ...contabilidad_rc } = values;
+  const {  ...etapasProcesoExT } = values;
 
-  let originalId = "COD-CC-";
+  let originalId = "COD-PET-";
   let contador = 1;
 
-  const queryID = await getDocs(collection(db, "contabilidad_rc"));
+  const queryID = await getDocs(collection(db, "etapasProcesoExT"));
   queryID.forEach((doc) => {
     const id = doc.id;
     const partes = id.split("-");
@@ -47,10 +48,10 @@ const submit = handleSubmit(async (values) => {
   let generatedId = generateNewId();
   try {
     const docRef = await setDoc(
-      doc(collection(db, "contabilidad_rc"), generatedId),
+      doc(collection(db, "etapasProcesoExT"), generatedId),
       {
-        ...contabilidad_rc,
-        idRegCaja: generatedId,
+        ...etapasProcesoExT,
+        idEtapasProcesoExT: generatedId,
         fecha: fechaFin.value,
       }
     );
@@ -91,6 +92,8 @@ const submit = handleSubmit(async (values) => {
                     label="Unidad"
                     variant="outlined"
                     persistent-hint
+                    :error-messages="unidad.errorMessage.value"
+
                   ></v-text-field>
                 </v-col>
                 <!-- Actividad  -->
@@ -100,6 +103,7 @@ const submit = handleSubmit(async (values) => {
                     label="Actividad"
                     variant="outlined"
                     persistent-hint
+                    :error-messages="actividad.errorMessage.value"
                   ></v-text-field>
                 </v-col>
 
@@ -110,6 +114,8 @@ const submit = handleSubmit(async (values) => {
                     label="Tiempo"
                     variant="outlined"
                     persistent-hint
+                    :error-messages="tiempo.errorMessage.value"
+
                   ></v-text-field>
                 </v-col>
 

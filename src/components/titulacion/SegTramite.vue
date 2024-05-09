@@ -1,7 +1,7 @@
 <script setup>
 import { useForm, useField } from "vee-validate";
 import { collection, setDoc, getDocs, doc } from "firebase/firestore";
-import { useFirestore } from "vuefire";
+import { useFirestore, useCollection } from "vuefire";
 import { useRouter } from "vue-router";
 import {
   validationSchema,
@@ -9,9 +9,14 @@ import {
 } from "@/validation/contabilidadSchema.js";
 import useImage from "@/composables/useImage";
 import { ref } from "vue";
+import { db } from '@/config/firebase';
+
+
+const etapasProcesoExTCollection = useCollection(
+  collection(db, "etapasProcesoExT")
+);
 
 const fechaFin = ref(new Date().toISOString().substr(0, 10));
-const db = useFirestore();
 const router = useRouter();
 const textoCancelar = "Cancelar";
 const textoSeleccionar = "Seleccionar";
@@ -201,46 +206,52 @@ export default {
         },
       ],
       desserts: [
-          {
-            name: 'Frozen Yogurt',
-            calories: 159,
-          },
-          {
-            name: 'Ice cream sandwich',
-            calories: 237,
-          },
-          {
-            name: 'Eclair',
-            calories: 262,
-          },
-          {
-            name: 'Cupcake',
-            calories: 305,
-          },
-          {
-            name: 'Gingerbread',
-            calories: 356,
-          },
-          {
-            name: 'Jelly bean',
-            calories: 375,
-          },
-          {
-            name: 'Lollipop',
-            calories: 392,
-          },
-          {
-            name: 'Honeycomb',
-            calories: 408,
-          },
-          {
-            name: 'Donut',
-            calories: 452,
-          },
-          {
-            name: 'KitKat',
-            calories: 518,
-          },
+        {
+          name: "Frozen Yogurt",
+          calories: 159,
+        },
+        {
+          name: "Ice cream sandwich",
+          calories: 237,
+        },
+        {
+          name: "Eclair",
+          calories: 262,
+        },
+        {
+          name: "Cupcake",
+          calories: 305,
+        },
+        {
+          name: "Gingerbread",
+          calories: 356,
+        },
+        {
+          name: "Jelly bean",
+          calories: 375,
+        },
+        {
+          name: "Lollipop",
+          calories: 392,
+        },
+        {
+          name: "Honeycomb",
+          calories: 408,
+        },
+        {
+          name: "Donut",
+          calories: 452,
+        },
+        {
+          name: "KitKat",
+          calories: 518,
+        },
+      ],
+      headers: [
+      
+        { title: "Unidad", value: "unidad" },
+        { title: "Actividad", value: "actividad" },
+        { title: "tiempo (Semanas)", value: "tiempo" },
         ],
 
       showDetails: false,
@@ -460,21 +471,22 @@ export default {
                         <template v-slot:item.1>
                           <v-card title="Entrega de monografia" flat>
                             <v-list lines="one">
-                              <v-list-item v-for="itemsEtapa1 in itemsEtapa1" :key="itemsEtapa1.id">
+                              <v-list-item
+                                v-for="itemsEtapa1 in itemsEtapa1"
+                                :key="itemsEtapa1.id"
+                              >
                                 <v-list-item-content>
                                   <v-list-item-title>
-                                    <v-icon 
-                                    color="green"
-                                    icon="fa-check" >
-                                  </v-icon>
-                                    
-                                    {{
-                                    itemsEtapa1.title
-                                  }}</v-list-item-title>
+                                    <v-icon color="green" icon="fa-check">
+                                    </v-icon>
+
+                                    {{ itemsEtapa1.title }}</v-list-item-title
+                                  >
                                   <v-list-item-subtitle>
                                     {{
-                                    itemsEtapa1.subtitle
-                                  }}</v-list-item-subtitle>
+                                      itemsEtapa1.subtitle
+                                    }}</v-list-item-subtitle
+                                  >
                                 </v-list-item-content>
                               </v-list-item>
                             </v-list>
@@ -550,60 +562,42 @@ export default {
                   </v-card>
                 </v-col>
               </v-row>
-
-              <v-row >
-       
+              
+              <v-row max-width="1200">
+                <v-col>
                 <v-card>
-                  <v-data-table >
-                    <thead>
-                      <tr>
-                        <th class="text-left">Name</th>
-                        <th class="text-left">Calories</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="item in desserts" :key="item.name">
-                        <td>{{ item.name }}</td>
-                        <td>{{ item.calories }}</td>
-                      </tr>
-                    </tbody>
-                  </v-data-table>
-                </v-card>
-             
+ 
+                  <v-data-table-virtual 
+                  :headers="headers" 
+                  :items="etapasProcesoExTCollection"
+                  :sort-by="[{ key: 'idRegCaja', order: 'asc' }]"
+                  class="height: auto"
+    >
+    
+    <template  v-slot:top>
+      <v-toolbar flat>
+        <v-spacer></v-spacer>
+        <v-toolbar-title class="text-center"  >
+          Proceso externo de titulación
+        </v-toolbar-title>
+        <v-spacer></v-spacer>
+      </v-toolbar>
+    </template>
+    
+    <template v-slot:no-data>
+      <v-btn color="primary" @click="initialize">
+        Reiniciar
+      </v-btn>
+    </template>
+ 
 
+  </v-data-table-virtual>
+                </v-card>
+              </v-col>
               </v-row>
             </VForm>
           </v-card-title>
         </v-card>
-
-
-        <template>
-  <v-table>
-    <thead>
-      <tr>
-        <th class="text-left">
-          Name
-        </th>
-        <th class="text-left">
-          Calories
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr
-        v-for="item in desserts"
-        :key="item.name"
-      >
-        <td>{{ item.name }}</td>
-        <td>{{ item.calories }}</td>
-      </tr>
-    </tbody>
-  </v-table>
-</template>
-
-
-
-
       </v-col>
     </v-row>
   </v-card>
@@ -628,12 +622,18 @@ export default {
 .col-etiqueta {
   padding-right: 3%;
 }
-.text-field-results {
-}
+
 .card-detalle {
   padding: 2%;
 }
 .div-detalle {
   padding-top: 2%;
+}
+.v-toolbar-title {
+  font-weight: bold;
+}
+
+.v-toolbar-title {
+  font-weight: bold;
 }
 </style>
