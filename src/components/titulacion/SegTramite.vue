@@ -3,12 +3,13 @@ import { useForm, useField } from "vee-validate";
 import { collection, setDoc, getDocs, doc } from "firebase/firestore";
 import { useFirestore } from "vuefire";
 import { useRouter } from "vue-router";
-import {
-  validationSchema,
-  imageSchema,
-} from "@/validation/contabilidadSchema.js";
-import useImage from "@/composables/useImage";
+
+
+import useSegTramite from "@/composables/useSegTramite";
+
 import { ref } from "vue";
+
+const { participanteCollection, buscarParticipantePorCI, error } = useSegTramite();
 
 const fechaFin = ref(new Date().toISOString().substr(0, 10));
 const db = useFirestore();
@@ -16,63 +17,30 @@ const router = useRouter();
 const textoCancelar = "Cancelar";
 const textoSeleccionar = "Seleccionar";
 
-const { handleSubmit } = useForm({
-  validationSchema: {
-    ...validationSchema,
-    ...imageSchema,
-  },
-});
+console.log("datos",participanteCollection)
 
-const { url, uploadImage, image } = useImage();
 
 const nroCarnet = useField("nroCarnet");
 const detalle = useField("detalle");
 const tipoPago = useField("tipoPago");
 const tipo = ["Recibo", "Factura"];
 const imagen = useField("imagen");
+const codigoEmpaste = useField("codigoEmpaste")
 
-const submit = handleSubmit(async (values) => {
-  const { imagen, ...contabilidad_rc } = values;
+const participantes = ref(null);  // Asumiendo un único objeto de participante
 
-  let originalId = "COD-CC-";
-  let contador = 1;
+// Asegúrate de manejar la posibilidad de que la consulta no devuelva resultados
+const resultado = await buscarParticipantePorCI(nroCarnet.value);
+if (resultado && resultado.length > 0) {
+    participantes.value = resultado[0]; // Asumiendo que la respuesta es un array
+    console.log("Datos del participante", participantes.value);
+} else {
+    participantes.value = null;
+    console.error('No se encontró un participante con ese número de documento.');
+}
 
-  const queryID = await getDocs(collection(db, "contabilidad_rc"));
-  queryID.forEach((doc) => {
-    const id = doc.id;
-    const partes = id.split("-");
-    const secuencia = partes[partes.length - 1]; // Obtiene el último elemento del array
-    if (secuencia && !isNaN(secuencia)) {
-      const numSecuencia = parseInt(secuencia);
-      if (numSecuencia >= contador) {
-        contador = numSecuencia + 1;
-      }
-    }
-  });
 
-  const generateNewId = () => {
-    return `${originalId}${contador}`;
-  };
-  let generatedId = generateNewId();
-  try {
-    const docRef = await setDoc(
-      doc(collection(db, "contabilidad_rc"), generatedId),
-      {
-        ...contabilidad_rc,
-        image: url.value,
-        idRegCaja: generatedId,
-        fecha: fechaFin.value,
-        estado: true,
-      }
-    );
-    console.log("Documento guardado correctamente.");
 
-    // Redirige al usuario a la lista de registros
-    router.push({ name: "admin-list-contabilidad" });
-  } catch (error) {
-    console.error("Error al guardar el documento en Firestore:", error);
-  }
-});
 </script>
     <script>
 export default {
@@ -264,7 +232,7 @@ export default {
 
                 <!-- Acciones del Formulario -->
                 <v-col cols="12" class="d-flex flex-wrap justify-center gap-4">
-                  <VBtn color="secondary" @click="submit">Buscar </VBtn>
+                  <VBtn color="secondary" @click="resultado">Buscar </VBtn>
                 </v-col>
               </v-row>
             </VForm>
@@ -279,7 +247,7 @@ export default {
     <v-card-subtitle class="text-h5 py-5">
       Resultados de la búsqueda
     </v-card-subtitle>
-    <v-row>
+    <v-row  >
       <v-col cols="12">
         <v-card>
           <v-card-title class="d-flex"> </v-card-title>
