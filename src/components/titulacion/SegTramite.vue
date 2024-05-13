@@ -1,13 +1,8 @@
 <script setup>
-import { useForm, useField } from "vee-validate";
-import { collection, setDoc, getDocs, doc } from "firebase/firestore";
-import { useFirestore, useCollection } from "vuefire";
+import { useField } from "vee-validate";
+import { collection } from "firebase/firestore";
+import {  useCollection } from "vuefire";
 import { useRouter } from "vue-router";
-import {
-  validationSchema,
-  imageSchema,
-} from "@/validation/contabilidadSchema.js";
-import useImage from "@/composables/useImage";
 import { ref } from "vue";
 import { db } from '@/config/firebase';
 
@@ -21,65 +16,17 @@ const router = useRouter();
 const textoCancelar = "Cancelar";
 const textoSeleccionar = "Seleccionar";
 
-const { handleSubmit } = useForm({
-  validationSchema: {
-    ...validationSchema,
-    ...imageSchema,
-  },
-});
-
-const { url, uploadImage, image } = useImage();
-
 const nroCarnet = useField("nroCarnet");
 const detalle = useField("detalle");
 const tipoPago = useField("tipoPago");
 const tipo = ["Recibo", "Factura"];
 const imagen = useField("imagen");
 
-const submit = handleSubmit(async (values) => {
-  const { imagen, ...contabilidad_rc } = values;
-
-  let originalId = "COD-CC-";
-  let contador = 1;
-
-  const queryID = await getDocs(collection(db, "contabilidad_rc"));
-  queryID.forEach((doc) => {
-    const id = doc.id;
-    const partes = id.split("-");
-    const secuencia = partes[partes.length - 1]; // Obtiene el último elemento del array
-    if (secuencia && !isNaN(secuencia)) {
-      const numSecuencia = parseInt(secuencia);
-      if (numSecuencia >= contador) {
-        contador = numSecuencia + 1;
-      }
-    }
-  });
-
-  const generateNewId = () => {
-    return `${originalId}${contador}`;
-  };
-  let generatedId = generateNewId();
-  try {
-    const docRef = await setDoc(
-      doc(collection(db, "contabilidad_rc"), generatedId),
-      {
-        ...contabilidad_rc,
-        image: url.value,
-        idRegCaja: generatedId,
-        fecha: fechaFin.value,
-        estado: true,
-      }
-    );
-    console.log("Documento guardado correctamente.");
-
-    // Redirige al usuario a la lista de registros
-    router.push({ name: "admin-list-contabilidad" });
-  } catch (error) {
-    console.error("Error al guardar el documento en Firestore:", error);
-  }
-});
 </script>
     <script>
+
+import { mapState, mapActions } from 'vuex';
+
 export default {
   data() {
     return {
@@ -205,48 +152,6 @@ export default {
             "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
         },
       ],
-      desserts: [
-        {
-          name: "Frozen Yogurt",
-          calories: 159,
-        },
-        {
-          name: "Ice cream sandwich",
-          calories: 237,
-        },
-        {
-          name: "Eclair",
-          calories: 262,
-        },
-        {
-          name: "Cupcake",
-          calories: 305,
-        },
-        {
-          name: "Gingerbread",
-          calories: 356,
-        },
-        {
-          name: "Jelly bean",
-          calories: 375,
-        },
-        {
-          name: "Lollipop",
-          calories: 392,
-        },
-        {
-          name: "Honeycomb",
-          calories: 408,
-        },
-        {
-          name: "Donut",
-          calories: 452,
-        },
-        {
-          name: "KitKat",
-          calories: 518,
-        },
-      ],
       headers: [
       
         { title: "Unidad", value: "unidad" },
@@ -259,9 +164,18 @@ export default {
     };
   },
   methods: {
+    ...mapActions(['fetchPersonas']),
+
     toggleDetails() {
       this.showDetails = !this.showDetails;
+
     },
+  },
+  computed: {
+    ...mapState(['personas'])
+  },
+  created() {
+    this.fetchPersonas();
   },
 };
 </script>
