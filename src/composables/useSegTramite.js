@@ -11,7 +11,7 @@ export default  function useSegTramite(){
     const error = ref(null);
     const participantes = ref([]);
 
-
+/*
     const buscarParticipantePorCI = async (ci) => {
       loading.value = true;
       error.value = null;
@@ -42,13 +42,13 @@ export default  function useSegTramite(){
       } finally {
         loading.value = false;
       }
-    }
+    }*/
   
 
 
     return{  
  participanteCollection,
-    buscarParticipantePorCI,
+  //  buscarParticipantePorCI,
     loading,
     error
     }

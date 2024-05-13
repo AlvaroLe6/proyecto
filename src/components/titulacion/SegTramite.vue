@@ -8,6 +8,7 @@ import { useRouter } from "vue-router";
 import useSegTramite from "@/composables/useSegTramite";
 
 import { ref } from "vue";
+import axios from "axios";
 
 const { participanteCollection, buscarParticipantePorCI, error } = useSegTramite();
 
@@ -28,7 +29,7 @@ const imagen = useField("imagen");
 const codigoEmpaste = useField("codigoEmpaste")
 
 const participantes = ref(null);  // Asumiendo un único objeto de participante
-
+/*
 // Asegúrate de manejar la posibilidad de que la consulta no devuelva resultados
 const resultado = await buscarParticipantePorCI(nroCarnet.value);
 if (resultado && resultado.length > 0) {
@@ -38,12 +39,16 @@ if (resultado && resultado.length > 0) {
     participantes.value = null;
     console.error('No se encontró un participante con ese número de documento.');
 }
-
+*/
 
 
 </script>
     <script>
 export default {
+
+  created:function(){
+    this.consultarPersonas();
+  },
   data() {
     return {
       ItemsEtapas: [
@@ -174,11 +179,25 @@ export default {
     };
   },
   methods: {
+  consultarPersonas(){
+    axios.get('http://localhost:3000/api/personas/')
+    .then(response=>{
+this.personas=response.data;
+console.log("alvaro",response)
+    });
+  /*  fetch('http://localhost:3000/api/personas/')
+    .then(respuesta =>respuesta.json())
+    .then(datosrespuesta => {
+      console.log(datosrespuesta)
+    })
+    .catch(console.log)
+  },
     toggleDetails() {
       this.showDetails = !this.showDetails;
-    },
-  },
-};
+    }*/
+  }
+}
+}
 </script>
 
 <template>
@@ -232,7 +251,7 @@ export default {
 
                 <!-- Acciones del Formulario -->
                 <v-col cols="12" class="d-flex flex-wrap justify-center gap-4">
-                  <VBtn color="secondary" @click="resultado">Buscar </VBtn>
+                  <VBtn color="secondary" @click="consultarPersonas">Buscar </VBtn>
                 </v-col>
               </v-row>
             </VForm>
