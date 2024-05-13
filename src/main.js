@@ -1,5 +1,7 @@
 
+
 import { createApp } from 'vue'
+import Vuex from 'vuex'
 import { createPinia } from 'pinia'
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
@@ -18,6 +20,7 @@ import { firebaseApp } from './config/firebase'
 
 import App from './App.vue'
 import router from './router'
+import store from './stores/store';
 
 import '@mdi/font/css/materialdesignicons.css'
 
@@ -38,6 +41,7 @@ app.use(VueFire,{
 
 app.component('VueDatePicker', VueDatePicker);
 app.use(vuetify)
+app.use(store)
 app.use(createPinia())
 app.use(router)
 
