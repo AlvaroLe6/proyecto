@@ -5,19 +5,60 @@ import {  useCollection } from "vuefire";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
 import { db } from '@/config/firebase';
+import axios from 'axios';
 
 
 const etapasProcesoExTCollection = useCollection(
   collection(db, "etapasProcesoExT")
 );
 
+const numDoc = ref('');
+const num_documento = ref('');
+const nombrePersona = ref('');
+const apellidoPersona = ref('');
+const codigo_emp = ref('');
+const programa = ref('');
+const sede = ref('');
+const inicio_tramite = ref('');
+const estado = ref('');
+const etapa_tramite = ref('');
+
+// Método para buscar la persona por número de documento
+const buscarPersona = async () => {
+  try {
+    const response = await axios.get(`http://localhost:3000/api/persona/${numDoc.value}`);
+    if (response.data) {
+      num_documento.value = response.data.num_doc;
+      nombrePersona.value = response.data.nombre;
+      apellidoPersona.value = response.data.apellidoPersona;
+      codigo_emp.value = response.data.codigo_empaste;
+      programa.value = response.data.programa;
+      sede.value = response.data.sede;
+      inicio_tramite.value = response.data.inicio_tramite;
+      estado.value = response.data.estado;
+      etapa_tramite.value = response.data.etapa_tramite;
+ 
+
+       // Asegúrate de que la respuesta incluya el campo 'nombre'
+    } else {
+      nombrePersona.value = 'Persona no encontrada';
+    }
+  } catch (error) {
+    console.error('Error al buscar persona:', error);
+    nombrePersona.value = 'Error en la búsqueda';
+  }
+};
+
+
+
+
+
 const fechaFin = ref(new Date().toISOString().substr(0, 10));
 const router = useRouter();
 const textoCancelar = "Cancelar";
 const textoSeleccionar = "Seleccionar";
-
-const nroCarnet = useField("nroCarnet");
 const detalle = useField("detalle");
+const nroCarnet = useField("nroCarnet");
 const tipoPago = useField("tipoPago");
 const tipo = ["Recibo", "Factura"];
 const imagen = useField("imagen");
@@ -30,6 +71,8 @@ import { mapState, mapActions } from 'vuex';
 export default {
   data() {
     return {
+
+      persona: null,
       ItemsEtapas: [
         "Etapa 1",
         "Etapa 2",
@@ -170,6 +213,8 @@ export default {
       this.showDetails = !this.showDetails;
 
     },
+    methods: { 
+  },
   },
   computed: {
     ...mapState(['personas'])
@@ -204,11 +249,13 @@ export default {
                   <v-text>C.I. N°</v-text>
                   <v-text-field
                     class="text-field-search"
-                    v-model="nroCarnet.value.value"
+                    v-model="numDoc"
                     label="Documento de identidad"
                     variant="outlined"
                     persistent-hint
                     margin="dense"
+                    outlined
+                    dense
                   ></v-text-field>
                 </v-col>
 
@@ -222,7 +269,7 @@ export default {
                     :teleport="true"
                     :enable-time-picker="false"
                     placeholder="Fecha de fin"
-                    :year-range="[2021, 2060]"
+                    :year-range="[1960, 2060]"
                     :cancel-text="textoCancelar"
                     :select-text="textoSeleccionar"
                   >
@@ -231,7 +278,7 @@ export default {
 
                 <!-- Acciones del Formulario -->
                 <v-col cols="12" class="d-flex flex-wrap justify-center gap-4">
-                  <VBtn color="secondary" @click="submit">Buscar </VBtn>
+                  <VBtn color="secondary" @click="buscarPersona">Buscar </VBtn>
                 </v-col>
               </v-row>
             </VForm>
@@ -263,7 +310,7 @@ export default {
 
                     <v-text-field
                       class="field-etiqueta"
-                      v-model="nroCarnet.value.value"
+                      v-model="codigo_emp"
                       variant="outlined"
                       persistent-hint
                       disabled
@@ -277,7 +324,7 @@ export default {
 
                     <v-text-field
                       class="field-etiqueta"
-                      v-model="nroCarnet.value.value"
+                      v-model="nombrePersona"
                       variant="outlined"
                       persistent-hint
                       disabled
@@ -291,7 +338,7 @@ export default {
 
                     <v-text-field
                       class="field-etiqueta"
-                      v-model="nroCarnet.value.value"
+                      v-model="num_documento"
                       variant="outlined"
                       persistent-hint
                       disabled
@@ -306,7 +353,7 @@ export default {
                     <v-text class="text-etiqueta">Programa</v-text>
                     <v-text-field
                       class="field-etiqueta"
-                      v-model="nroCarnet.value.value"
+                      v-model="programa"
                       variant="outlined"
                       persistent-hint
                       disabled
@@ -319,7 +366,7 @@ export default {
                     <v-text class="text-etiqueta">Sede</v-text>
                     <v-text-field
                       class="field-etiqueta"
-                      v-model="nroCarnet.value.value"
+                      v-model="sede"
                       variant="outlined"
                       persistent-hint
                       disabled
@@ -333,7 +380,7 @@ export default {
 
                     <v-text-field
                       class="field-etiqueta"
-                      v-model="nroCarnet.value.value"
+                      v-model="inicio_tramite"
                       variant="outlined"
                       persistent-hint
                       disabled
@@ -349,7 +396,7 @@ export default {
 
                     <v-text-field
                       class="field-etiqueta"
-                      v-model="nroCarnet.value.value"
+                      v-model="estado"
                       variant="outlined"
                       persistent-hint
                       disabled
@@ -363,7 +410,7 @@ export default {
 
                     <v-text-field
                       class="text-field-results"
-                      v-model="nroCarnet.value.value"
+                      v-model="etapa_tramite"
                       variant="outlined"
                       persistent-hint
                       disabled
