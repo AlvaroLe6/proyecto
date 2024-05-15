@@ -1,9 +1,7 @@
 <script setup>
-import { useField } from "vee-validate";
 import { collection } from "firebase/firestore";
 import {  useCollection } from "vuefire";
-import { useRouter } from "vue-router";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { db } from '@/config/firebase';
 import axios from 'axios';
 
@@ -11,7 +9,8 @@ import axios from 'axios';
 const etapasProcesoExTCollection = useCollection(
   collection(db, "etapasProcesoExT")
 );
-
+const showDetails = ref(false);
+const activeStep = ref(1);
 const numDoc = ref('');
 const num_documento = ref('');
 const nombrePersona = ref('');
@@ -26,7 +25,7 @@ const etapa_tramite = ref('');
 // Método para buscar la persona por número de documento
 const buscarPersona = async () => {
   try {
-    const response = await axios.get(`http://localhost:3000/api/persona/${numDoc.value}`);
+    const response = await axios.get(`http://localhost:3000/api/buscar-estudiante/${numDoc.value}`);
     if (response.data) {
       num_documento.value = response.data.num_doc;
       nombrePersona.value = response.data.nombre;
@@ -37,7 +36,8 @@ const buscarPersona = async () => {
       inicio_tramite.value = response.data.inicio_tramite;
       estado.value = response.data.estado;
       etapa_tramite.value = response.data.etapa_tramite;
- 
+      activeStep.value = parseInt(etapa_tramite.value);
+  console.log("etapa del tramite",activeStep.value)
 
        // Asegúrate de que la respuesta incluya el campo 'nombre'
     } else {
@@ -50,18 +50,146 @@ const buscarPersona = async () => {
 };
 
 
-
-
-
 const fechaFin = ref(new Date().toISOString().substr(0, 10));
-const router = useRouter();
 const textoCancelar = "Cancelar";
 const textoSeleccionar = "Seleccionar";
-const detalle = useField("detalle");
-const nroCarnet = useField("nroCarnet");
-const tipoPago = useField("tipoPago");
-const tipo = ["Recibo", "Factura"];
-const imagen = useField("imagen");
+
+const itemsEtapa1 = ref([
+        {
+          id: 1, title: "Aprobar todos los módulos",
+          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+        },
+        {
+          id: 2, title: "Estar con sus cuotas al dia",
+          subtitle:
+            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+        },
+        {
+          id: 3, title: "Presentación de monografia",
+          subtitle:
+            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
+        },
+      
+      ]);
+      const itemsEtapa2= ref([
+        {
+          id: 1,
+          title: "Item 1",
+          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+        },
+        {
+          id: 2,
+          title: "Item 2",
+          subtitle:
+            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+        },
+        {
+          id: 3,
+          title: "Item 3",
+          subtitle:
+            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
+        },
+        ]);
+        const  itemsEtapa3= ref([
+        {
+          id: 1,
+          title: "Item 1",
+          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+        },
+        {
+          id: 2,
+          title: "Item 2",
+          subtitle:
+            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+        },
+        {
+          id: 3,
+          title: "Item 3",
+          subtitle:
+            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
+        },
+        ]);
+
+    const  itemsEtapa4= ref([
+        {
+          id: 1,
+          title: "Item 1",
+          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+        },
+        {
+          id: 2,
+          title: "Item 2",
+          subtitle:
+            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+        },
+        {
+          id: 3,
+          title: "Item 3",
+          subtitle:
+            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
+        },
+        ]);
+    const  itemsEtapa5= ref([
+        {
+          id: 1,
+          title: "Item 1",
+          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+        },
+        {
+          id: 2,
+          title: "Item 2",
+          subtitle:
+            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+        },
+        {
+          id: 3,
+          title: "Item 3",
+          subtitle:
+            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
+        },
+        ]);
+    const  itemsEtapa6= ref([
+        {
+          id: 1,
+          title: "Item 1",
+          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+        },
+        {
+          id: 2,
+          title: "Item 2",
+          subtitle:
+            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+        },
+        {
+          id: 3,
+          title: "Item 3",
+          subtitle:
+            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi"
+        },
+      ]);
+      const currentItems = computed(() => {
+  switch (activeStep.value) {
+    case 1:
+      return itemsEtapa1.value;
+    case 2:
+      return itemsEtapa2.value;
+    case 3:
+      return itemsEtapa3.value;
+    case 4:
+      return itemsEtapa4.value;
+    case 5:
+      return itemsEtapa5.value;
+    case 6:
+      return itemsEtapa6.value;
+    default:
+      return [];
+  }
+});
+
+
+  const toggleDetails = () => {
+  showDetails.value = !showDetails.value;
+};
 
 </script>
     <script>
@@ -72,129 +200,7 @@ export default {
   data() {
     return {
 
-      persona: null,
-      ItemsEtapas: [
-        "Etapa 1",
-        "Etapa 2",
-        "Etapa 3",
-        "Etapa 4",
-        "Etapa 5",
-        "Etapa 6",
-      ],
-      itemsEtapa1: [
-        {
-          id: 1,
-          title: "Aprobar todos los módulos",
-          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
-        },
-        {
-          id: 2,
-          title: "Estar con sus cuotas al dia",
-          subtitle:
-            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-        },
-        {
-          id: 3,
-          title: "Presentación de monografia",
-          subtitle:
-            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
-        },
-      ],
-      itemsEtapa2: [
-        {
-          id: 1,
-          title: "Item 1",
-          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
-        },
-        {
-          id: 2,
-          title: "Item 2",
-          subtitle:
-            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-        },
-        {
-          id: 3,
-          title: "Item 3",
-          subtitle:
-            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
-        },
-      ],
-      itemsEtapa3: [
-        {
-          id: 1,
-          title: "Item 1",
-          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
-        },
-        {
-          id: 2,
-          title: "Item 2",
-          subtitle:
-            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-        },
-        {
-          id: 3,
-          title: "Item 3",
-          subtitle:
-            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
-        },
-      ],
-      itemsEtapa4: [
-        {
-          id: 1,
-          title: "Item 1",
-          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
-        },
-        {
-          id: 2,
-          title: "Item 2",
-          subtitle:
-            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-        },
-        {
-          id: 3,
-          title: "Item 3",
-          subtitle:
-            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
-        },
-      ],
-      itemsEtapa5: [
-        {
-          id: 1,
-          title: "Item 1",
-          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
-        },
-        {
-          id: 2,
-          title: "Item 2",
-          subtitle:
-            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-        },
-        {
-          id: 3,
-          title: "Item 3",
-          subtitle:
-            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
-        },
-      ],
-      itemsEtapa6: [
-        {
-          id: 1,
-          title: "Item 1",
-          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
-        },
-        {
-          id: 2,
-          title: "Item 2",
-          subtitle:
-            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-        },
-        {
-          id: 3,
-          title: "Item 3",
-          subtitle:
-            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
-        },
-      ],
+      persona: null,   
       headers: [
       
         { title: "Unidad", value: "unidad" },
@@ -202,19 +208,11 @@ export default {
         { title: "tiempo (Semanas)", value: "tiempo" },
         ],
 
-      showDetails: false,
       progress: 25,
     };
   },
   methods: {
     ...mapActions(['fetchPersonas']),
-
-    toggleDetails() {
-      this.showDetails = !this.showDetails;
-
-    },
-    methods: { 
-  },
   },
   computed: {
     ...mapState(['personas'])
@@ -428,97 +426,39 @@ export default {
                     <div class="div-detalle" v-if="showDetails">
                       <h2>Proceso externo de titulación</h2>
                       <div class="text-caption">Etapas</div>
-                      <v-stepper :items="ItemsEtapas">
-                        <template v-slot:item.1>
-                          <v-card title="Entrega de monografia" flat>
-                            <v-list lines="one">
-                              <v-list-item
-                                v-for="itemsEtapa1 in itemsEtapa1"
-                                :key="itemsEtapa1.id"
-                              >
-                                <v-list-item-content>
-                                  <v-list-item-title>
-                                    <v-icon color="green" icon="fa-check">
-                                    </v-icon>
+                      <v-stepper v-model="activeStep">
+            <v-stepper-header>
+              <v-stepper-step
+                v-for="index in 6"
+                :key="index"
+                :complete="activeStep > index"
+                :step="index"
+                :class="{ 'step-selected': activeStep === index }"
+              >
+                Etapa {{ index }}
+              </v-stepper-step>
+            </v-stepper-header>
 
-                                    {{ itemsEtapa1.title }}</v-list-item-title
-                                  >
-                                  <v-list-item-subtitle>
-                                    {{
-                                      itemsEtapa1.subtitle
-                                    }}</v-list-item-subtitle
-                                  >
-                                </v-list-item-content>
-                              </v-list-item>
-                            </v-list>
-                          </v-card>
-                        </template>
-
-                        <template v-slot:item.2>
-                          <v-card title="Revisión de monografia" flat>
-                            <v-list lines="one">
-                              <v-list-item
-                                v-for="n in 3"
-                                :key="n"
-                                :title="'Item ' + n"
-                                subtitle="Lorem ipsum dolor sit amet consectetur adipisicing elit"
-                              ></v-list-item>
-                            </v-list>
-                          </v-card>
-                        </template>
-
-                        <template v-slot:item.3>
-                          <v-card title="Presentación de documentacion" flat>
-                            <v-list lines="one">
-                              <v-list-item
-                                v-for="n in 3"
-                                :key="n"
-                                :title="'Item ' + n"
-                                subtitle="Lorem ipsum dolor sit amet consectetur adipisicing elit"
-                              ></v-list-item>
-                            </v-list>
-                          </v-card>
-                        </template>
-
-                        <template v-slot:item.4>
-                          <v-card title="Entrega final" flat>
-                            <v-list lines="one">
-                              <v-list-item
-                                v-for="n in 3"
-                                :key="n"
-                                :title="'Item ' + n"
-                                subtitle="Lorem ipsum dolor sit amet consectetur adipisicing elit"
-                              ></v-list-item>
-                            </v-list>
-                          </v-card>
-                        </template>
-
-                        <template v-slot:item.5>
-                          <v-card title="En tramite" flat>
-                            <v-list lines="one">
-                              <v-list-item
-                                v-for="n in 3"
-                                :key="n"
-                                :title="'Item ' + n"
-                                subtitle="Lorem ipsum dolor sit amet consectetur adipisicing elit"
-                              ></v-list-item>
-                            </v-list>
-                          </v-card>
-                        </template>
-
-                        <template v-slot:item.6>
-                          <v-card title="Titulo listo?" flat>
-                            <v-list lines="one">
-                              <v-list-item
-                                v-for="n in 3"
-                                :key="n"
-                                :title="'Item ' + n"
-                                subtitle="Lorem ipsum dolor sit amet consectetur adipisicing elit"
-                              ></v-list-item>
-                            </v-list>
-                          </v-card>
-                        </template>
-                      </v-stepper>
+            <v-stepper-items>
+              <v-stepper-content :step="activeStep">
+                <v-card flat>
+                  <v-list lines="one">
+                    <v-list-item v-for="item in currentItems" :key="item.id">
+                      <v-list-item-content>
+                        <v-list-item-title>
+                          <v-icon color="green">mdi-check</v-icon>
+                          {{ item.title }}
+                        </v-list-item-title>
+                        <v-list-item-subtitle>
+                          {{ item.subtitle }}
+                        </v-list-item-subtitle>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list>
+                </v-card>
+              </v-stepper-content>
+            </v-stepper-items>
+          </v-stepper>
                     </div>
                   </v-card>
                 </v-col>
@@ -532,18 +472,17 @@ export default {
                   :headers="headers" 
                   :items="etapasProcesoExTCollection"
                   :sort-by="[{ key: 'idRegCaja', order: 'asc' }]"
-                  class="height: auto"
-    >
+                  class="height: auto">
     
-    <template  v-slot:top>
-      <v-toolbar flat>
-        <v-spacer></v-spacer>
-        <v-toolbar-title class="text-center"  >
-          Proceso externo de titulación
-        </v-toolbar-title>
-        <v-spacer></v-spacer>
-      </v-toolbar>
-    </template>
+          <template  v-slot:top>
+            <v-toolbar flat>
+              <v-spacer></v-spacer>
+              <v-toolbar-title class="text-center"  >
+                Proceso externo de titulación
+              </v-toolbar-title>
+              <v-spacer></v-spacer>
+            </v-toolbar>
+          </template>
     
     <template v-slot:no-data>
       <v-btn color="primary" @click="initialize">
@@ -596,5 +535,9 @@ export default {
 
 .v-toolbar-title {
   font-weight: bold;
+}
+.step-selected {
+  background-color: #3f51b5; /* Cambia a tu color preferido */
+  color: white;
 }
 </style>

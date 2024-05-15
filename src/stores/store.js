@@ -13,7 +13,7 @@ export default createStore({
   },
   actions: {
     fetchPersonas({ commit }) {
-      axios.get('http://localhost:3000/api/persona/')
+      axios.get('http://localhost:3000/api/buscar-estudiante/')
         .then(response => {
           commit('SET_PERSONAS', response.data);
         })
