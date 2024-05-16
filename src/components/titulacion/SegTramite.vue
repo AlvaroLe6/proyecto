@@ -1,31 +1,32 @@
 <script setup>
 import { collection } from "firebase/firestore";
-import {  useCollection } from "vuefire";
+import { useCollection } from "vuefire";
 import { ref, computed } from "vue";
-import { db } from '@/config/firebase';
-import axios from 'axios';
-
+import { db } from "@/config/firebase";
+import axios from "axios";
 
 const etapasProcesoExTCollection = useCollection(
   collection(db, "etapasProcesoExT")
 );
 const showDetails = ref(false);
 const activeStep = ref(1);
-const numDoc = ref('');
-const num_documento = ref('');
-const nombrePersona = ref('');
-const apellidoPersona = ref('');
-const codigo_emp = ref('');
-const programa = ref('');
-const sede = ref('');
-const inicio_tramite = ref('');
-const estado = ref('');
-const etapa_tramite = ref('');
+const numDoc = ref("");
+const num_documento = ref("");
+const nombrePersona = ref("");
+const apellidoPersona = ref("");
+const codigo_emp = ref("");
+const programa = ref("");
+const sede = ref("");
+const inicio_tramite = ref("");
+const estado = ref("");
+const etapa_tramite = ref("");
 
 // Método para buscar la persona por número de documento
 const buscarPersona = async () => {
   try {
-    const response = await axios.get(`http://localhost:3000/api/buscar-estudiante/${numDoc.value}`);
+    const response = await axios.get(
+      `http://localhost:3000/api/buscar-estudiante/${numDoc.value}`
+    );
     if (response.data) {
       num_documento.value = response.data.num_doc;
       nombrePersona.value = response.data.nombre;
@@ -37,137 +38,138 @@ const buscarPersona = async () => {
       estado.value = response.data.estado;
       etapa_tramite.value = response.data.etapa_tramite;
       activeStep.value = parseInt(etapa_tramite.value);
-  console.log("etapa del tramite",activeStep.value)
+      console.log("etapa del tramite", activeStep.value);
 
-       // Asegúrate de que la respuesta incluya el campo 'nombre'
+      // Asegúrate de que la respuesta incluya el campo 'nombre'
     } else {
-      nombrePersona.value = 'Persona no encontrada';
+      nombrePersona.value = "Persona no encontrada";
     }
   } catch (error) {
-    console.error('Error al buscar persona:', error);
-    nombrePersona.value = 'Error en la búsqueda';
+    console.error("Error al buscar persona:", error);
+    nombrePersona.value = "Error en la búsqueda";
   }
 };
-
 
 const fechaFin = ref(new Date().toISOString().substr(0, 10));
 const textoCancelar = "Cancelar";
 const textoSeleccionar = "Seleccionar";
 
 const itemsEtapa1 = ref([
-        {
-          id: 1, title: "Aprobar todos los módulos",
-          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
-        },
-        {
-          id: 2, title: "Estar con sus cuotas al dia",
-          subtitle:
-            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-        },
-        {
-          id: 3, title: "Presentación de monografia",
-          subtitle:
-            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
-        },
-      
-      ]);
-      const itemsEtapa2= ref([
-        {
-          id: 1,
-          title: "Item 1",
-          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
-        },
-        {
-          id: 2,
-          title: "Item 2",
-          subtitle:
-            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-        },
-        {
-          id: 3,
-          title: "Item 3",
-          subtitle:
-            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
-        },
-        ]);
-        const  itemsEtapa3= ref([
-        {
-          id: 1,
-          title: "Item 1",
-          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
-        },
-        {
-          id: 2,
-          title: "Item 2",
-          subtitle:
-            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-        },
-        {
-          id: 3,
-          title: "Item 3",
-          subtitle:
-            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
-        },
-        ]);
+  {
+    id: 1,
+    title: "Aprobar todos los módulos",
+    subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+  },
+  {
+    id: 2,
+    title: "Estar con sus cuotas al dia",
+    subtitle:
+      "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+  },
+  {
+    id: 3,
+    title: "Presentación de monografia",
+    subtitle:
+      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
+  },
+]);
+const itemsEtapa2 = ref([
+  {
+    id: 1,
+    title: "Item 1",
+    subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+  },
+  {
+    id: 2,
+    title: "Item 2",
+    subtitle:
+      "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+  },
+  {
+    id: 3,
+    title: "Item 3",
+    subtitle:
+      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
+  },
+]);
+const itemsEtapa3 = ref([
+  {
+    id: 1,
+    title: "Item 1",
+    subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+  },
+  {
+    id: 2,
+    title: "Item 2",
+    subtitle:
+      "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+  },
+  {
+    id: 3,
+    title: "Item 3",
+    subtitle:
+      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
+  },
+]);
 
-    const  itemsEtapa4= ref([
-        {
-          id: 1,
-          title: "Item 1",
-          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
-        },
-        {
-          id: 2,
-          title: "Item 2",
-          subtitle:
-            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-        },
-        {
-          id: 3,
-          title: "Item 3",
-          subtitle:
-            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
-        },
-        ]);
-    const  itemsEtapa5= ref([
-        {
-          id: 1,
-          title: "Item 1",
-          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
-        },
-        {
-          id: 2,
-          title: "Item 2",
-          subtitle:
-            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-        },
-        {
-          id: 3,
-          title: "Item 3",
-          subtitle:
-            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
-        },
-        ]);
-    const  itemsEtapa6= ref([
-        {
-          id: 1,
-          title: "Item 1",
-          subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
-        },
-        {
-          id: 2,
-          title: "Item 2",
-          subtitle:
-            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-        },
-        {
-          id: 3,
-          title: "Item 3",
-          subtitle:
-            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi"
-        },
-      ]);
-      const currentItems = computed(() => {
+const itemsEtapa4 = ref([
+  {
+    id: 1,
+    title: "Item 1",
+    subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+  },
+  {
+    id: 2,
+    title: "Item 2",
+    subtitle:
+      "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+  },
+  {
+    id: 3,
+    title: "Item 3",
+    subtitle:
+      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
+  },
+]);
+const itemsEtapa5 = ref([
+  {
+    id: 1,
+    title: "Item 1",
+    subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+  },
+  {
+    id: 2,
+    title: "Item 2",
+    subtitle:
+      "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+  },
+  {
+    id: 3,
+    title: "Item 3",
+    subtitle:
+      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
+  },
+]);
+const itemsEtapa6 = ref([
+  {
+    id: 1,
+    title: "Item 1",
+    subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+  },
+  {
+    id: 2,
+    title: "Item 2",
+    subtitle:
+      "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+  },
+  {
+    id: 3,
+    title: "Item 3",
+    subtitle:
+      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
+  },
+]);
+const currentItems = computed(() => {
   switch (activeStep.value) {
     case 1:
       return itemsEtapa1.value;
@@ -186,36 +188,31 @@ const itemsEtapa1 = ref([
   }
 });
 
-
-  const toggleDetails = () => {
+const toggleDetails = () => {
   showDetails.value = !showDetails.value;
 };
-
 </script>
     <script>
-
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions } from "vuex";
 
 export default {
   data() {
     return {
-
-      persona: null,   
+      persona: null,
       headers: [
-      
         { title: "Unidad", value: "unidad" },
         { title: "Actividad", value: "actividad" },
         { title: "tiempo (Semanas)", value: "tiempo" },
-        ],
+      ],
 
       progress: 25,
     };
   },
   methods: {
-    ...mapActions(['fetchPersonas']),
+    ...mapActions(["fetchPersonas"]),
   },
   computed: {
-    ...mapState(['personas'])
+    ...mapState(["personas"]),
   },
   created() {
     this.fetchPersonas();
@@ -427,73 +424,73 @@ export default {
                       <h2>Proceso externo de titulación</h2>
                       <div class="text-caption">Etapas</div>
                       <v-stepper v-model="activeStep">
-            <v-stepper-header>
-              <v-stepper-step
-                v-for="index in 6"
-                :key="index"
-                :complete="activeStep > index"
-                :step="index"
-                :class="{ 'step-selected': activeStep === index }"
-              >
-                Etapa {{ index }}
-              </v-stepper-step>
-            </v-stepper-header>
+                        <v-stepper-header>
+                          <v-stepper-step
+                            v-for="index in 6"
+                            :key="index"
+                            :complete="activeStep > index"
+                            :step="index"
+                            :class="{ 'step-selected': activeStep === index }"
+                          >
+                            Etapa {{ index }}
+                          </v-stepper-step>
+                        </v-stepper-header>
 
-            <v-stepper-items>
-              <v-stepper-content :step="activeStep">
-                <v-card flat>
-                  <v-list lines="one">
-                    <v-list-item v-for="item in currentItems" :key="item.id">
-                      <v-list-item-content>
-                        <v-list-item-title>
-                          <v-icon color="green">mdi-check</v-icon>
-                          {{ item.title }}
-                        </v-list-item-title>
-                        <v-list-item-subtitle>
-                          {{ item.subtitle }}
-                        </v-list-item-subtitle>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-                </v-card>
-              </v-stepper-content>
-            </v-stepper-items>
-          </v-stepper>
+                        <v-stepper-items>
+                          <v-stepper-content :step="activeStep">
+                            <v-card flat>
+                              <v-list lines="one">
+                                <v-list-item
+                                  v-for="item in currentItems"
+                                  :key="item.id"
+                                >
+                                  <v-list-item-content>
+                                    <v-list-item-title>
+                                      <v-icon color="green">mdi-check</v-icon>
+                                      {{ item.title }}
+                                    </v-list-item-title>
+                                    <v-list-item-subtitle>
+                                      {{ item.subtitle }}
+                                    </v-list-item-subtitle>
+                                  </v-list-item-content>
+                                </v-list-item>
+                              </v-list>
+                            </v-card>
+                          </v-stepper-content>
+                        </v-stepper-items>
+                      </v-stepper>
                     </div>
                   </v-card>
                 </v-col>
               </v-row>
-              
+
               <v-row max-width="1200">
                 <v-col>
-                <v-card>
- 
-                  <v-data-table-virtual 
-                  :headers="headers" 
-                  :items="etapasProcesoExTCollection"
-                  :sort-by="[{ key: 'idRegCaja', order: 'asc' }]"
-                  class="height: auto">
-    
-          <template  v-slot:top>
-            <v-toolbar flat>
-              <v-spacer></v-spacer>
-              <v-toolbar-title class="text-center"  >
-                Proceso externo de titulación
-              </v-toolbar-title>
-              <v-spacer></v-spacer>
-            </v-toolbar>
-          </template>
-    
-    <template v-slot:no-data>
-      <v-btn color="primary" @click="initialize">
-        Reiniciar
-      </v-btn>
-    </template>
- 
+                  <v-card>
+                    <v-data-table-virtual
+                      :headers="headers"
+                      :items="etapasProcesoExTCollection"
+                      :sort-by="[{ key: 'idRegCaja', order: 'asc' }]"
+                      class="height: auto"
+                    >
+                      <template v-slot:top>
+                        <v-toolbar flat>
+                          <v-spacer></v-spacer>
+                          <v-toolbar-title class="text-center">
+                            Proceso externo de titulación
+                          </v-toolbar-title>
+                          <v-spacer></v-spacer>
+                        </v-toolbar>
+                      </template>
 
-  </v-data-table-virtual>
-                </v-card>
-              </v-col>
+                      <template v-slot:no-data>
+                        <v-btn color="primary" @click="initialize">
+                          Reiniciar
+                        </v-btn>
+                      </template>
+                    </v-data-table-virtual>
+                  </v-card>
+                </v-col>
               </v-row>
             </VForm>
           </v-card-title>
@@ -537,7 +534,7 @@ export default {
   font-weight: bold;
 }
 .step-selected {
-  background-color: #3f51b5; /* Cambia a tu color preferido */
+  background-color: #4caf50; /* Cambia a tu color preferido */
   color: white;
 }
 </style>

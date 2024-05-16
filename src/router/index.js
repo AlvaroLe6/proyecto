@@ -32,7 +32,11 @@ const router = createRouter({
       name: 'etapas-proceso-externo-t',
       component: () => import('../views/titulacion/EtapasProcesoExternoTView.vue')
     },
-
+    {
+      path: '/list-estudiantes',
+      name: 'list-estudiantes',
+      component: () => import('../views/titulacion/AdminListEstudiantesView.vue')
+    },
     {
       path: '/admin',
       mane: 'admin',
