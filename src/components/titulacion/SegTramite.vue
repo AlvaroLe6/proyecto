@@ -212,20 +212,18 @@ console.log("alvaro",response)
     <v-row>
       <v-col cols="12">
         <v-card>
-          <v-card-title class="d-flex"> </v-card-title>
-          <VDivider />
-
+       <VDivider />
           <v-card-title>
             <!-- Formulario -->
             <VForm class="mt-6">
               <v-row>
                 <!-- Documento de identidad -->
-                <v-col cols="12" md="6">
+                <v-col cols="12" md="4">
                   <v-text>C.I. N°</v-text>
                   <v-text-field
                     class="text-field-search"
                     v-model="nroCarnet.value.value"
-                    label="Documento de identidad"
+                    label="C.I. N° - Documento de identidad"
                     variant="outlined"
                     persistent-hint
                     margin="dense"
@@ -233,7 +231,7 @@ console.log("alvaro",response)
                 </v-col>
 
                 <!-- Fecha nacimiento -->
-                <v-col cols="12" md="6">
+                <v-col cols="12" md="4">
                   <v-text>Fecha de nacimiento</v-text>
                   <VueDatePicker
                     class="flex-grow-1"
@@ -248,9 +246,8 @@ console.log("alvaro",response)
                   >
                   </VueDatePicker>
                 </v-col>
-
-                <!-- Acciones del Formulario -->
-                <v-col cols="12" class="d-flex flex-wrap justify-center gap-4">
+                <!-- Boton para buscar -->
+                <v-col cols="12" md="4" class="d-flex align-center">
                   <VBtn color="secondary" @click="consultarPersonas">Buscar </VBtn>
                 </v-col>
               </v-row>
@@ -503,7 +500,7 @@ console.log("alvaro",response)
   </v-card>
 </template>
 
-<style scoped>
+<style>
 .text-field-search {
   height: 56px;
   width: 100%;
@@ -522,12 +519,23 @@ console.log("alvaro",response)
 .col-etiqueta {
   padding-right: 3%;
 }
-.text-field-results {
-}
 .card-detalle {
   padding: 2%;
 }
 .div-detalle {
   padding-top: 2%;
+}
+
+.v-field__input {
+  min-height: 0 !important; /* Sobrescribe el min-height */
+  padding-bottom: 0 !important; 
+  display: flex;
+  align-items: center;
+  height: 40px; /* Ajusta la altura*/
+}
+.v-input__control {
+  min-height: 40px !important; /* Altura mínima*/
+  display: flex;
+  align-items: center;
 }
 </style>
