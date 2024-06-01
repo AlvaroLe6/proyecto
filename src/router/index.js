@@ -44,6 +44,12 @@ const router = createRouter({
       meta: { requiresAuth: true },
       children: [
         {
+          path: '/admin/inicio',
+          name: 'admin-inicio',
+          component: () => import('../views/admin/AdminView.vue'),
+          meta: { requiresAuth: true },
+        },
+        {
           path: '/admin/list_contabilidad',
           name: 'admin-list-contabilidad',
           component: () => import('../views/admin/AdminListContView.vue'),
@@ -59,6 +65,13 @@ const router = createRouter({
           path: '/admin/account-settings',
           name: 'account-settings',
           component: () => import('../views/AccountSettingsView.vue'),
+          meta: { requiresAuth: true },
+
+        },
+        {
+          path: '/admin/certificado-conclusion',
+          name: 'certificado-conclusion',
+          component: () => import('../views/titulacion/certificado/CertificadoConclusionViews.vue'),
           meta: { requiresAuth: true },
 
         },

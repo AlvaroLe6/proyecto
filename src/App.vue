@@ -3,9 +3,13 @@
   import { RouterView } from "vue-router";
   import { useAuthStore } from "./stores/auth";
   import UserProfile from '@/layouts/UserProfile.vue'
-
+  import AdminMenu from "@/components/admin/AdminMenu.vue";
+  import { useRouter } from "vue-router";
 
   const auth = useAuthStore();
+  const router = useRouter();  
+
+
   </script>
   <template>
     <v-app>
@@ -18,20 +22,13 @@
                 height="80"
               />
             </router-link>
-        
             <v-spacer></v-spacer>
 
             <div class="right-section">          
-              <v-btn
-              v-if="auth.isAuth"
-              :to="{ name: 'admin-list-contabilidad' }" 
-              class="mr-4"> 
-              Admin 
-            </v-btn>
-                  
+              <div v-if="auth.isAuth">
+            <AdminMenu v-if="auth.isAuth" />
+          </div>
               <UserProfile v-if="auth.isAuth" />
-        
-      
               <v-btn 
               v-else
               :to="{ name: 'login' }"> Iniciar Sesión </v-btn>

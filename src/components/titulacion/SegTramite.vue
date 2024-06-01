@@ -8,7 +8,8 @@ import axios from "axios";
 const etapasProcesoExTCollection = useCollection(
   collection(db, "etapasProcesoExT")
 );
-const showDetails = ref(false);
+const showDetails = ref(false); // Variable para mostrar/ocultar ver más detalles
+const showResults = ref(false); // Variable para mostrar/ocultar resultados busqueda
 const activeStep = ref(1);
 const numDoc = ref("");
 const num_documento = ref("");
@@ -20,6 +21,11 @@ const sede = ref("");
 const inicio_tramite = ref("");
 const estado = ref("");
 const etapa_tramite = ref("");
+
+// Variables para el snackbar al momento de buscar a una persona
+const snackbar = ref(false);
+const nackbarText = ref("");
+const snackbarColor = ref("");
 
 // Método para buscar la persona por número de documento
 const buscarPersona = async () => {
@@ -40,13 +46,33 @@ const buscarPersona = async () => {
       activeStep.value = parseInt(etapa_tramite.value);
       console.log("etapa del tramite", activeStep.value);
 
-      // Asegúrate de que la respuesta incluya el campo 'nombre'
+      // Mostrar los resultados después de busqueda
+      showResults.value = true;
+      // Mostrar snackbar cuando el estudiante es encontrado
+      nackbarText.value = "Datos encontrados";
+      snackbar.value = true;
+      snackbarColor.value = "green";
+
     } else {
       nombrePersona.value = "Persona no encontrada";
+      showResults.value = false;
+
+      // Mostrar snackbar con mensaje de estudiante no encontrado
+      nackbarText.value = "Persona no encontrada";
+      snackbar.value = true;
+      snackbarColor.value = "red";
+      
+      
     }
   } catch (error) {
     console.error("Error al buscar persona:", error);
     nombrePersona.value = "Error en la búsqueda";
+    showResults.value = false;
+
+  // Mostrar snackbar con mensaje de error
+    nackbarText.value = "Error en la búsqueda";
+    snackbar.value = true;
+    snackbarColor.value = "red";
   }
 };
 
@@ -222,30 +248,25 @@ export default {
 
 <template>
   <v-card max-width="1200" flat class="mx-auto my-10" elevation="3">
-    <v-card-title class="text-h4 font-weight-bold" tag="h3">
-      Tramites
-    </v-card-title>
-
+    <v-card-title class="text-h4" tag="h3"> Tramites </v-card-title>
     <v-card-subtitle class="text-h5 py-5">
       Seguimineto de titulación
     </v-card-subtitle>
     <v-row>
       <v-col cols="12">
         <v-card>
-          <v-card-title class="d-flex"> </v-card-title>
           <VDivider />
-
           <v-card-title>
             <!-- Formulario -->
             <VForm class="mt-6">
               <v-row>
                 <!-- Documento de identidad -->
-                <v-col cols="12" md="6">
+                <v-col cols="12" md="4">
                   <v-text>C.I. N°</v-text>
                   <v-text-field
                     class="text-field-search"
                     v-model="numDoc"
-                    label="Documento de identidad"
+                    label="C.I. N° - Documento de identidad"
                     variant="outlined"
                     persistent-hint
                     margin="dense"
@@ -255,7 +276,7 @@ export default {
                 </v-col>
 
                 <!-- Fecha nacimiento -->
-                <v-col cols="12" md="6">
+                <v-col cols="12" md="4">
                   <v-text>Fecha de nacimiento</v-text>
                   <VueDatePicker
                     class="flex-grow-1"
@@ -271,8 +292,8 @@ export default {
                   </VueDatePicker>
                 </v-col>
 
-                <!-- Acciones del Formulario -->
-                <v-col cols="12" class="d-flex flex-wrap justify-center gap-4">
+                <!-- Boton de buscar -->
+                <v-col cols="12" md="4" class="d-flex align-center">
                   <VBtn color="secondary" @click="buscarPersona">Buscar </VBtn>
                 </v-col>
               </v-row>
@@ -282,7 +303,14 @@ export default {
       </v-col>
     </v-row>
   </v-card>
-  <v-card max-width="1200" flat class="mx-auto my-10" elevation="3">
+  <!-- Carta maneja resultados de la búsqueda -->
+  <v-card
+    v-if="showResults"
+    max-width="1200"
+    flat
+    class="mx-auto my-10"
+    elevation="3"
+  >
     <v-card-title class="text-h4 font-weight-bold" tag="h3"> </v-card-title>
 
     <v-card-subtitle class="text-h5 py-5">
@@ -463,47 +491,62 @@ export default {
                   </v-card>
                 </v-col>
               </v-row>
-
-              <v-row max-width="1200">
-                <v-col>
-                  <v-card>
-                    <v-data-table-virtual
-                      :headers="headers"
-                      :items="etapasProcesoExTCollection"
-                      :sort-by="[{ key: 'idRegCaja', order: 'asc' }]"
-                      class="height: auto"
-                    >
-                      <template v-slot:top>
-                        <v-toolbar flat>
-                          <v-spacer></v-spacer>
-                          <v-toolbar-title class="text-center">
-                            Proceso externo de titulación
-                          </v-toolbar-title>
-                          <v-spacer></v-spacer>
-                        </v-toolbar>
-                      </template>
-
-                      <template v-slot:no-data>
-                        <v-btn color="primary" @click="initialize">
-                          Reiniciar
-                        </v-btn>
-                      </template>
-                    </v-data-table-virtual>
-                  </v-card>
-                </v-col>
-              </v-row>
             </VForm>
           </v-card-title>
         </v-card>
       </v-col>
     </v-row>
   </v-card>
+  <v-card max-width="1200" flat class="mx-auto my-10" elevation="3">
+    <v-row max-width="1200">
+      <v-col>
+        <v-card>
+          <v-data-table-virtual
+            :headers="headers"
+            :items="etapasProcesoExTCollection"
+            :sort-by="[{ key: 'idRegCaja', order: 'asc' }]"
+            class="height: auto"
+          >
+            <template v-slot:top>
+              <v-toolbar flat>
+                <v-spacer></v-spacer>
+                <v-toolbar-title class="text-center">
+                  Proceso externo de titulación
+                </v-toolbar-title>
+                <v-spacer></v-spacer>
+              </v-toolbar>
+            </template>
+
+            <template v-slot:no-data>
+              <v-btn color="primary" @click="initialize"> Reiniciar </v-btn>
+            </template>
+          </v-data-table-virtual>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-card>
+    <!-- Snackbar al moemnto de buscar a una persona por número de documento -->
+    <v-snackbar v-model="snackbar" :color="snackbarColor">
+    {{ nackbarText }}
+    <template v-slot:actions>
+      <v-btn color="white" variant="text" @click="snackbar = false">
+        Close
+      </v-btn>
+    </template>
+  </v-snackbar>
 </template>
 
-<style scoped>
+<style>
 .text-field-search {
   height: 56px;
   width: 100%;
+}
+.v-field__input {
+  min-height: 0 !important; /* Sobrescribe el min-height */
+  padding-bottom: 0 !important;
+  display: flex;
+  align-items: center;
+  height: 40px; /* Ajusta la altura*/
 }
 .card {
   border-right: solid;
@@ -537,4 +580,5 @@ export default {
   background-color: #4caf50; /* Cambia a tu color preferido */
   color: white;
 }
+
 </style>
