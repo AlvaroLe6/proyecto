@@ -15,8 +15,9 @@ const headers = ref([
   { title:'Inicio Tramite',text: 'Inicio Tramite', value: 'inicio_tramite' },
   { title:'Estado',text: 'Estado', value: 'estado' },
   { title:'Etapa',text: 'Etapa', value: 'etapa_tramite' },
+  { title:'Tipo',text: 'Tipo', value: 'tipo' },
   { title:'Programa',text: 'Programa', value: 'programa' },
-  {title: 'Sede',text: 'Sede', value: 'sede' },
+  { title: 'Sede',text: 'Sede', value: 'sede' },
   { title:'Fecha Inscripcion',text: 'Fecha Inscripcion', value: 'fechaInscripcion' },
   { title: 'Acciones', key: 'actions', sortable: false },
 ]); 
@@ -63,6 +64,7 @@ const exportToExcel = () => {
     inicio_tramite:item.inicio_tramite,
     estado: item.estado,
     etapa_tramite: item.etapa_tramite,
+    tipo: item.tipo,
     programa: item.programa,
     sede:item.sede,
     fechaInscripcion:item.fechaInscripcion,
@@ -104,6 +106,11 @@ const itemPrograma = computed(() => {
   const programas = registrosEstudiantes.value.map(item => item.programa);
   return [...new Set(programas)];
 });
+
+const openCertificadoConclusion = (item) => {
+  const url = `/admin/certificado-conclusion?num_doc=${item.num_doc}&nombre=${item.nombre}&apellido=${item.apellidoPersona}&ci=${item.ci}&tipo=${item.tipo}&programa=${item.programa}&sede=${item.sede}&fecha=${item.fecha}`;
+  window.open(url, '_blank');
+};
 </script>
 
 <template>
@@ -185,7 +192,7 @@ const itemPrograma = computed(() => {
       color="deep-purple-darken-1"
       size="small" 
       class="mr-2" 
-      @click="openFaseDialog(item)">mdi-book-multiple</v-icon>
+      @click="openCertificadoConclusion(item)">mdi-book-multiple</v-icon>
   <v-icon 
       color="indigo-lighten-1
 "
