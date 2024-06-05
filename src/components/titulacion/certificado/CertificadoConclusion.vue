@@ -15,6 +15,9 @@ const certficadoData = ref({
   fecha: route.query.fecha,
   tipo: route.query.tipo,
 });
+const cargaHoraria = ref('');
+const fecha = ref('');
+
 
 // Propiedad calculada para obtener el valor de Tipo de programa en mayúsculas
 const tipoMayuscula = computed(() => {
@@ -34,6 +37,12 @@ const downloadPDF = () => {
     pdf.save("certificado.pdf");
   });
 };
+
+function actualizarCertificado() {
+  cargaHoraria.value.value = cargaHoraria.value;
+  fecha.value = fecha.value;
+}
+
 </script>
 
 <template>
@@ -42,20 +51,21 @@ const downloadPDF = () => {
       <v-row>
         <v-col cols="6">
           <v-text-field
-            label="Detalle"
+            v-model="cargaHoraria"
+            label="Carga horaria"
             variant="outlined"
             persistent-hint
           ></v-text-field>
         </v-col>
         <v-col cols="6">
-          <v-text-field
-            label="Detalle"
-            variant="outlined"
-            persistent-hint
-          ></v-text-field>
+          <VueDatePicker
+            v-model="model"
+            label="Select a date"
+            max-width="368"
+          ></VueDatePicker>
         </v-col>
         <v-col cols="12" class="d-flex justify-center">
-          <v-btn>Agregar</v-btn>
+          <v-btn @click="actualizarCertificado" color="blue-lighten-4">Agregar</v-btn>
         </v-col>
       </v-row>
     </v-card>
@@ -96,7 +106,7 @@ const downloadPDF = () => {
               <h3>{{ certficadoData.programa }}</h3>
             </div>
             <p>
-              CERTIFICANDO CON 2400 HORAS ACADÉMICAS RECONOCIDAS POR LA
+              CERTIFICANDO CON {{ cargaHoraria }} HORAS ACADÉMICAS RECONOCIDAS POR LA
               UNIVERSIDAD NACIONAL SIGLO XX.<br />
               <strong>ESTADO:</strong> PROGRAMA DE {{ tipoMayuscula }} APROBADO
               Y CULMINADO
@@ -111,7 +121,7 @@ const downloadPDF = () => {
               consiguientes del interesado.
             </p>
             <div class="text-right mt-5">
-              <p>La Paz, 28 de febrero del 2024</p>
+              <p>La Paz, {{ fecha }} del 2024</p>
             </div>
             <div class="text-center mt-2">
               <img
