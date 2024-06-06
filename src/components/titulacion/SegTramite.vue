@@ -525,7 +525,7 @@ export default {
       </v-col>
     </v-row>
   </v-card>
-    <!-- Snackbar al moemnto de buscar a una persona por número de documento -->
+    <!-- Snackbar al momento de buscar a una persona por número de documento -->
     <v-snackbar v-model="snackbar" :color="snackbarColor">
     {{ nackbarText }}
     <template v-slot:actions>

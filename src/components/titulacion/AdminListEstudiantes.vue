@@ -111,6 +111,10 @@ const openCertificadoConclusion = (item) => {
   const url = `/admin/certificado-conclusion?num_doc=${item.num_doc}&nombre=${item.nombre}&apellido=${item.apellidoPersona}&ci=${item.ci}&tipo=${item.tipo}&programa=${item.programa}&sede=${item.sede}&fecha=${item.fecha}`;
   window.open(url, '_blank');
 };
+const openCertificadoDesarrollo = (item) => {
+  const url = `/admin/certificado-desarrollo?num_doc=${item.num_doc}&nombre=${item.nombre}&apellido=${item.apellidoPersona}&ci=${item.ci}&tipo=${item.tipo}&programa=${item.programa}&sede=${item.sede}&fecha=${item.fecha}`;
+  window.open(url, '_blank');
+};
 </script>
 
 <template>
@@ -194,11 +198,10 @@ const openCertificadoConclusion = (item) => {
       class="mr-2" 
       @click="openCertificadoConclusion(item)">mdi-book-multiple</v-icon>
   <v-icon 
-      color="indigo-lighten-1
-"
+      color="indigo-lighten-1"
       size="small" 
       class="mr-2" 
-      @click="openFaseDialog(item)">mdi-book</v-icon>
+      @click="openCertificadoDesarrollo(item)">mdi-book</v-icon>
       
       <v-icon 
       color="green-accent-3"

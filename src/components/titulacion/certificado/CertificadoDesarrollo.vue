@@ -18,7 +18,7 @@ const certficadoData = ref({
   fecha: route.query.fecha,
   tipo: route.query.tipo,
 });
-const cargaHoraria = ref('');
+
 const fecha = ref('');
 
 // Configura la fecha en español
@@ -32,19 +32,7 @@ const snackbarColor = ref("");
 // Variable para ocultar fecha
 const showFecha = ref(false); // Variable para mostrar/ocultar ver más detalles
 
-
-// Propiedad calculada para obtener el valor de Tipo de programa en mayúsculas
-const tipoMayuscula = computed(() => {
-  return certficadoData.value.tipo.toUpperCase();
-});
-
 const downloadPDF = () => {
-  if (!cargaHoraria.value) {
-    nackbarText.value = "No hay carga horaria";
-    snackbar.value = true;
-    snackbarColor.value = "red";
-    return;
-  }
 
   if (showFecha.value == false) {
     nackbarText.value = "Debe actualizar el certificado";
@@ -76,12 +64,6 @@ const formatFecha = (date) => {
 
 // Actualiza el certificado para imprimir
 function actualizarCertificado() {
-  if (!cargaHoraria.value) {
-    nackbarText.value = "No hay carga horaria";
-    snackbar.value = true;
-    snackbarColor.value = "red";
-    return;
-  }
 
   if (!fecha.value) {
     nackbarText.value = "No hay fecha seleccionada";
@@ -89,8 +71,7 @@ function actualizarCertificado() {
     snackbarColor.value = "red";
     return;
   }
-
-  cargaHoraria.value = cargaHoraria.value;
+z
   formatFecha(fecha.value)
   showFecha.value = true;
   nackbarText.value = "Certificado Actualizado";
@@ -104,15 +85,6 @@ function actualizarCertificado() {
   <v-container class="align-center">
     <v-card class="pa-5" max-width="8.5in">
       <v-row>
-        <v-col cols="6">
-          <v-text-field
-            class="text-field-cargaHoraria"
-            v-model="cargaHoraria"
-            label="Carga horaria"
-            variant="outlined"
-            persistent-hint
-          ></v-text-field>
-        </v-col>
         <v-col cols="6">
           <VueDatePicker
             v-model="fecha"
@@ -149,7 +121,8 @@ function actualizarCertificado() {
             <h3 class="mt-3">Escuela de Negocios ESAM</h3>
             <p><em>"Por qué el éxito no es producto de la casualidad"</em></p>
           </div>
-          <div class="text-center my-7">
+
+          <div class="text-center certificado-h2">
             <h2>CERTIFICADO</h2>
           </div>
           <div class="my-1 contenido-certificado">
@@ -170,23 +143,12 @@ function actualizarCertificado() {
               >
               con el número de identidad
               <strong>CI. {{ certficadoData.num_doc }}</strong
-              >. Concluyó con el plan de estudio en el siguiente programa en
-              nuestra institución:
+              >. Actualmente se encuentra en desarrollo académico 
+              en el siguiente programa en nuestra institución:
             </p>
             <div class="text-center my-5">
               <h3>{{ certficadoData.programa }}</h3>
             </div>
-            <p>
-              CERTIFICANDO CON {{ cargaHoraria }} HORAS ACADÉMICAS RECONOCIDAS POR LA
-              UNIVERSIDAD NACIONAL SIGLO XX.<br />
-              <strong>ESTADO:</strong> PROGRAMA DE {{ tipoMayuscula }} APROBADO
-              Y CULMINADO
-            </p>
-            <p>
-              En este tiempo el mencionado profesional demostró puntualidad y
-              responsabilidad en el desarrollo de los módulos realizados :
-              {{ certficadoData.tipo }}
-            </p>
             <p>
               Es cuanto se certifica en honor a la verdad y para fines
               consiguientes del interesado.
@@ -234,8 +196,6 @@ export default {
   align-items: center;
   height: 2.5rem; /* Ajusta la altura*/
 }
-
-
 .certificado-card {
   width: 8.5in; /* Ancho de la hoja carta */
   height: 11in; /* Alto de la hoja carta */
@@ -249,9 +209,12 @@ export default {
   box-sizing: border-box;
   justify-content: center;
 }
+
 .contenido-certificado {
   margin: 0.5in; /* Margen interno entre el borde de la tarjeta y el contenido */
   text-align: justify;
+  padding-top: -15%;
+  padding-block-end: 15%;
 }
 @media print {
   .certificado-card {
@@ -263,6 +226,9 @@ export default {
     background-repeat: no-repeat;
   }
 }
+.certificado-h2 {
+ padding-top: 5%;
+}
 
 h2,
 h3 {
@@ -273,6 +239,7 @@ p {
 }
 .text-center-cab {
   text-align: center;
+
 }
 .text-center {
   text-align: center;

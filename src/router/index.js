@@ -75,6 +75,13 @@ const router = createRouter({
           meta: { requiresAuth: true },
 
         },
+        {
+          path: '/admin/certificado-desarrollo',
+          name: 'certificado-desarrollo',
+          component: () => import('../views/titulacion/certificado/CertificadoDesarrolloViews.vue'),
+          meta: { requiresAuth: true },
+
+        },
       ]
     }
   ]
