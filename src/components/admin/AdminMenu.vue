@@ -33,16 +33,16 @@ console.log("Nombre de usuario cargado:", userProfile.value.username);
             </v-list-item>
             <v-divider class="my-2" />
 
-            <!-- Marketing -->
+            <!-- Listado de Estudiantes -->
             <v-list-item :to="{ name: 'list-estudiantes' }">
               <template #prepend>
                 <v-icon class="me-2" icon="mdi-account" size="22"/>
               </template>
 
-              <v-list-item-title :to="{ name: 'account-settings' }">Estudiantes</v-list-item-title>
+              <v-list-item-title>Estudiantes</v-list-item-title>
             </v-list-item>
 
-            <!-- Administrivo -->
+            <!-- Listado de certificados -->
             <v-list-item link>
               <template #prepend>
                 <v-icon class="me-2" icon="mdi-account-box" size="22" />
@@ -53,8 +53,8 @@ console.log("Nombre de usuario cargado:", userProfile.value.username);
               </v-list-item-title>
             </v-list-item>
 
-            <!-- Docentes -->
-            <v-list-item link>
+            <!-- Lista de Docentes -->
+            <v-list-item :to="{ name: 'list-docentes' }">
               <template #prepend>
                 <v-icon class="me-2" icon="mdi-account-network" size="22" />
               </template>

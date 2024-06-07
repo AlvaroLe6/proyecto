@@ -38,6 +38,11 @@ const router = createRouter({
       component: () => import('../views/titulacion/AdminListEstudiantesView.vue')
     },
     {
+      path: '/list-docentes',
+      name: 'list-docentes',
+      component: () => import('../views/titulacion/AdminListDocentesView.vue')
+    },
+    {
       path: '/admin',
       mane: 'admin',
       component: () => import('../views/admin/AdminLayout.vue'),

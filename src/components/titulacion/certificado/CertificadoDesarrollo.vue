@@ -71,7 +71,7 @@ function actualizarCertificado() {
     snackbarColor.value = "red";
     return;
   }
-z
+
   formatFecha(fecha.value)
   showFecha.value = true;
   nackbarText.value = "Certificado Actualizado";
@@ -82,10 +82,10 @@ z
 </script>
 
 <template>
-  <v-container class="align-center">
+  <v-container class="align-center" align="center" >
     <v-card class="pa-5" max-width="8.5in">
       <v-row>
-        <v-col cols="6">
+        <v-col cols="12">
           <VueDatePicker
             v-model="fecha"
             label="Selecciona una fecha"
@@ -106,7 +106,7 @@ z
     {{ nackbarText }}
     <template v-slot:actions>
       <v-btn color="white" variant="text" @click="snackbar = false">
-        Close
+        Cerrar
       </v-btn>
     </template>
   </v-snackbar>
@@ -159,7 +159,7 @@ z
 
             <div class="text-center mt-2">
               <img
-                src="@/assets/images/certificado/firma-lic-varinia.png"
+                src="@/assets/images/certificado/firma-lic-varinia-b.png"
                 max-width="120"
               />
               <p><strong>Lic. Dakmar Varinia Tambo Villazon</strong></p>
@@ -185,21 +185,11 @@ export default {
 </script>
   
   <style>
-.text-field-search {
-  height: 3.5rem;
-  width: 100%;
-}
-.v-field__input {
-  min-height: 0 !important; /* Sobrescribe el min-height */
-  padding-bottom: 0 !important;
-  display: flex;
-  align-items: center;
-  height: 2.5rem; /* Ajusta la altura*/
-}
+
 .certificado-card {
   width: 8.5in; /* Ancho de la hoja carta */
   height: 11in; /* Alto de la hoja carta */
-  background-image: url("@/assets/images/certificado/certificado-1.jpg");
+  background-image: url("@/assets/images/certificado/certificado-0.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

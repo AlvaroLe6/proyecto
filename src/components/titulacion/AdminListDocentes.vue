@@ -7,70 +7,55 @@ import * as XLSX from 'xlsx';
 const headers = ref([
   { title: 'Nro. Carnet',text: 'Nro. Carnet',align: 'start',
           sortable: false,
-          key: 'num_doc' },
-  { title:'Nombre', text: 'Nombre', value: 'nombre' },
-  { title:'Apellido',text: 'Apellido', value: 'apellidoPersona' },
-  { title:'Fecha de Nacimiento', text: 'Fecha de Nacimiento', value: 'fecha_nacimiento' },
-  { title:'Cod. Empaste', text: 'Cod. Empaste', value: 'codigo_empaste' },
-  { title:'Inicio Tramite',text: 'Inicio Tramite', value: 'inicio_tramite' },
-  { title:'Estado',text: 'Estado', value: 'estado' },
-  { title:'Etapa',text: 'Etapa', value: 'etapa_tramite' },
-  { title:'Tipo',text: 'Tipo', value: 'tipo' },
-  { title:'Programa',text: 'Programa', value: 'programa' },
-  { title: 'Sede',text: 'Sede', value: 'sede' },
-  { title:'Fecha Inscripcion',text: 'Fecha Inscripcion', value: 'fechaInscripcion' },
+          key: 'Carnet' },
+  { title:'Nombre', text: 'Nombre', value: 'Nombre' },
+  { title:'Apellido',text: 'Apellido', value: 'Apellidos' },
+  { title:'Profesión', text: 'Profesión', value: 'Profesion' },
+  { title:'Correo', text: 'Correo', value: 'Correo' },
+  { title:'Teléfono',text: 'Teléfono', value: 'Telefono' },
   { title: 'Acciones', key: 'actions', sortable: false },
 ]); 
-const registrosEstudiantes = ref([]);
+const registrosDocentes = ref([]);
 const filtroEtapa = ref(null);
 const filtroPrograma = ref(null);
 
-const subirArchivo = ref(null);
-
-const buscarRegistrosEst = async () => {
+const buscarRegistrosDoc = async () => {
   try {
     const response = await axios.get(
-      `http://localhost:3000/api/buscar-estudiante-inscrito`
+      `http://localhost:3000/api/buscar-docentes`
     );
     if (response.data) {
-      registrosEstudiantes.value = response.data;
-      console.log("los datos de los clientes: ",registrosEstudiantes.value)
+      registrosDocentes.value = response.data;
+      console.log("los datos de los docentes: ",registrosDocentes.value)
      
-      // Asegúrate de que la respuesta incluya el campo 'nombre'
     } else {
-      nombrePersona.value = "Persona no encontrada";
+      nombreDocente.value = "Docente no encontrado";
     }
   } catch (error) {
-    console.error("Error al buscar persona:", error);
-    nombrePersona.value = "Error en la búsqueda";
+    console.error("Error al buscar docente:", error);
+    nombreDocente.value = "Error en la búsqueda";
   }
 };
-// Llama a buscarRegistrosEst para inicializar la tabla con datos
+// Llama a buscarRegistrosDoc para inicializar la tabla con datos
 onMounted(() => {
 
-  buscarRegistrosEst();
+  buscarRegistrosDoc();
 });
 
 // exportar excel
 const exportToExcel = () => {
-  if (!registrosEstudiantes.value.length) {
+  if (!registrosDocentes.value.length) {
     console.error('No hay datos para exportar.');
     return;
   }
 
-  const ws = XLSX.utils.json_to_sheet(registrosEstudiantes.value.map(item => ({
-    Nombres: item.nombre,
-    Apellidos: item.apellidoPersona,
-    Fecha_naciemiento: item.fecha_nacimiento,
-    codigo_empaste:item.codigo_empaste,
-    inicio_tramite:item.inicio_tramite,
-    estado: item.estado,
-    etapa_tramite: item.etapa_tramite,
-    tipo: item.tipo,
-    programa: item.programa,
-    sede:item.sede,
-    fechaInscripcion:item.fechaInscripcion,
-
+  const ws = XLSX.utils.json_to_sheet(registrosDocentes.value.map(item => ({
+    ci:item.Carnet,
+    nombres: item.Nombre,
+    apellidos: item.Apellidos,
+    profesion:item.Profesion,
+    correo: item.Correo,
+    telefono: item.Telefono,
   })));
   
   const wb = XLSX.utils.book_new();
@@ -79,7 +64,7 @@ const exportToExcel = () => {
 };
 
 const registrosFiltrados = computed(() => {
-  return registrosEstudiantes.value.filter(registro => {
+  return registrosDocentes.value.filter(registro => {
     const etapaMatch = !filtroEtapa.value || registro.etapa_tramite === filtroEtapa.value;
     const programaMatch = !filtroPrograma.value || registro.programa === filtroPrograma.value;
 
@@ -100,12 +85,12 @@ function limpiarFiltros() {
 }
 // Obtener las etapas para el filtrado
 const itemEtapa = computed(() => {
-  const etapas = registrosEstudiantes.value.map(item => item.etapa_tramite);
+  const etapas = registrosDocentes.value.map(item => item.etapa_tramite);
   return [...new Set(etapas)];
 });
 // Obtener los programas para el filtrado
 const itemPrograma = computed(() => {
-  const programas = registrosEstudiantes.value.map(item => item.programa);
+  const programas = registrosDocentes.value.map(item => item.programa);
   return [...new Set(programas)];
 });
 
@@ -117,28 +102,16 @@ const openCertificadoDesarrollo = (item) => {
   const url = `/admin/certificado-desarrollo?num_doc=${item.num_doc}&nombre=${item.nombre}&apellido=${item.apellidoPersona}&ci=${item.ci}&tipo=${item.tipo}&programa=${item.programa}&sede=${item.sede}&fecha=${item.fecha}`;
   window.open(url, '_blank');
 };
-
-// Permite seleccionar un archivo
-const triggerSubirArchivo = () => {
-  subirArchivo.value.click();
-};
-
-const handleFileUpload = (event) => {
-  const file = event.target.files[0];
-  console.log(file);
-  // Aquí puedes agregar el código para manejar el archivo subido
-};
-
 </script>
 
 <template>
   <v-btn color="blue" variant="flat" :to="{ name: 'nuevo-reg-contabilidad' }">Subir archivo</v-btn>
 
-  <h2 class="text-center text-h3 my-5 font-weight-bold">Lista de registros estudiantes</h2>
+  <h2 class="text-center text-h3 my-5 font-weight-bold">Lista de registros docentes</h2>
 
   <v-data-table 
   class="data-table"   
-  v-if="registrosEstudiantes.length" 
+  v-if="registrosDocentes.length" 
   :headers="headers" 
   :items="registrosFiltrados"
   :items-per-page="10"
@@ -193,27 +166,7 @@ const handleFileUpload = (event) => {
         @click="exportToExcel">
         Excel
       </v-btn>
-      <v-icon
-        class="icon-camera"
-        @click="triggerSubirArchivo"
-        color="cyan-accent-4"
-        large>
-        mdi-camera
-      </v-icon>
-      <input 
-        ref="subirArchivo"
-        type="file" 
-        accept="image/png, image/jpeg, image/bmp"
-        style="display: none;"
-        @change="handleFileUpload">
-      <v-btn
-        class="btn-subir"
-        prepend-icon="mdi-upload"
-        variant="outlined"
-       @click="actualizarCertificado" 
-        color="cyan-accent-4">
-        Subir
-      </v-btn> 
+
     </div>
     <v-spacer></v-spacer>
     <v-checkbox
@@ -286,7 +239,6 @@ const handleFileUpload = (event) => {
   gap: 1rem;
 
 }
-.file-input-certificado,
 .text-field-buscar,
 .select-fase{
   max-width: 200px;
@@ -329,10 +281,6 @@ const handleFileUpload = (event) => {
   font-size: 12px; 
 }
 .btn-limpiar-filtro {
-  padding: 10px 5px; 
-  font-size: 12px; 
-}
-.btn-subir {
   padding: 10px 5px; 
   font-size: 12px; 
 }
