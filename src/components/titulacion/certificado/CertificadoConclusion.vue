@@ -98,6 +98,9 @@ function actualizarCertificado() {
   snackbarColor.value = "green";
 
 }
+
+
+
 </script>
 
 <template>
@@ -257,7 +260,7 @@ export default {
   .certificado-card {
     width: 8.5in; /* Ancho de la hoja carta */
     height: 11in; /* Alto de la hoja carta */
-    background-image: url("@/assets/images/certificado/certificado-1.jpg");
+    background-image: url("@/assets/images/certificado/certificado-0.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

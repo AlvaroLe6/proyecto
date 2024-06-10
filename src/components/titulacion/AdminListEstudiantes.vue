@@ -26,6 +26,11 @@ const filtroEtapa = ref(null);
 const filtroPrograma = ref(null);
 
 const subirArchivo = ref(null);
+const fondoCertificado = ref('');
+
+const snackbar = ref(false);
+const snackbarText = ref("");
+const snackbarColor = ref("");
 
 const buscarRegistrosEst = async () => {
   try {
@@ -49,6 +54,8 @@ const buscarRegistrosEst = async () => {
 onMounted(() => {
 
   buscarRegistrosEst();
+    // Obtener el último fondo de certificado al montar el componente
+    obtenerFondoCertificado();
 });
 
 // exportar excel
@@ -123,10 +130,30 @@ const triggerSubirArchivo = () => {
   subirArchivo.value.click();
 };
 
-const handleFileUpload = (event) => {
+//Cargar los archivos en la base de datos
+const handleFileUpload = async (event) => {
   const file = event.target.files[0];
-  console.log(file);
-  // Aquí puedes agregar el código para manejar el archivo subido
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append('fondo', file);
+
+  try {
+    const response = await axios.post('http://localhost:3000/api/fondo_certificados', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    console.log('Archivo subido:', response.data);
+    snackbarText.value = "Fondo del certificado actualizado";
+    snackbar.value = true;
+    snackbarColor.value = "green";
+  } catch (error) {
+    console.error('Error al subir el archivo:', error);
+    snackbarText.value = "Error al subir el archivo";
+    snackbar.value = true;
+    snackbarColor.value = "red";
+  }
 };
 
 </script>
@@ -210,7 +237,7 @@ const handleFileUpload = (event) => {
         class="btn-subir"
         prepend-icon="mdi-upload"
         variant="outlined"
-       @click="actualizarCertificado" 
+       @click="triggerSubirArchivo" 
         color="cyan-accent-4">
         Subir
       </v-btn> 
@@ -270,6 +297,16 @@ const handleFileUpload = (event) => {
       </v-btn>
     </template>
   </v-data-table>  
+
+    <!-- Snackbar para mostrar el mensaje de certificado actualizado -->
+    <v-snackbar v-model="snackbar" :color="snackbarColor">
+    {{ snackbarText }}
+    <template v-slot:actions>
+      <v-btn color="white" variant="text" @click="snackbar = false">
+        Cerrar
+      </v-btn>
+    </template>
+  </v-snackbar>
 </template>
 <style>
 .data-table{
