@@ -1,10 +1,11 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted  } from "vue";
 import { useRoute } from "vue-router";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { es } from 'date-fns/locale';
 import { format } from 'date-fns';
+import axios from 'axios';
 
 
 const route = useRoute();
@@ -20,6 +21,8 @@ const certficadoData = ref({
 });
 const cargaHoraria = ref('');
 const fecha = ref('');
+const fondoCertificado = ref('');
+
 
 // Configura la fecha en español
 const esLocale = es;
@@ -31,6 +34,7 @@ const snackbarColor = ref("");
 
 // Variable para ocultar fecha
 const showFecha = ref(false); // Variable para mostrar/ocultar ver más detalles
+
 
 
 // Propiedad calculada para obtener el valor de Tipo de programa en mayúsculas
@@ -52,8 +56,12 @@ const downloadPDF = () => {
     snackbarColor.value = "red";
     return;
   }
-
+  
   const element = document.getElementById("certificado");
+  
+  const fondo = fondoCertificado.value || "@/assets/images/certificado/certificado-0.png"; // Ruta de respaldo si no hay fondo
+
+
   html2canvas(element, { scale: 2 }).then((canvas) => {
     const imgData = canvas.toDataURL("image/png");
     const pdf = new jsPDF({
@@ -101,6 +109,23 @@ function actualizarCertificado() {
 
 
 
+const obtenerFondoCertificado = async () => {
+try {
+  const response = await axios.get('http://localhost:3000/api/fondo_certificados');
+  fondoCertificado.value = `http://localhost:3000/${response.data.Ruta}`;
+  console.log("fondo del certificado", fondoCertificado.value);
+
+  //console.log("askasdkasdjlasdjadlsj",document.documentElement.style.setProperty('--fondo-certificado', `url(${fondoCertificado.value})`))
+  document.documentElement.style.setProperty('--fondo-certificado', `url(${fondoCertificado.value})`);
+
+} catch (error) {
+  console.error('Error al obtener el fondo del certificado:', error);
+}
+};
+
+onMounted(  () => {
+  obtenerFondoCertificado();
+});
 </script>
 
 <template>
@@ -147,7 +172,12 @@ function actualizarCertificado() {
   <v-container class="d-flex justify-center align-center">
     <v-row justify="center">
       <v-col cols="12" class="d-flex justify-center">
-        <v-card id="certificado" class="pa-5 certificado-card" elevation="2">
+        <v-card 
+        id="certificado" 
+        class="pa-5 certificado-card" 
+        elevation="2"
+
+        >
           <div class="text-center-cab mb-5">
             <h3 class="mt-3">Escuela de Negocios ESAM</h3>
             <p><em>"Por qué el éxito no es producto de la casualidad"</em></p>
@@ -225,7 +255,11 @@ export default {
 };
 </script>
   
-  <style>
+<style>
+:root {
+  --fondo-certificado: url("");
+}
+
 .text-field-search {
   height: 3.5rem;
   width: 100%;
@@ -238,19 +272,19 @@ export default {
   height: 2.5rem; /* Ajusta la altura*/
 }
 
-
 .certificado-card {
   width: 8.5in; /* Ancho de la hoja carta */
   height: 11in; /* Alto de la hoja carta */
-  background-image: url("@/assets/images/certificado/certificado-0.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-color: white; /* Fondo blanco para evitar problemas de fondo gris */
+  /*background-color: white; /* Fondo blanco para evitar problemas de fondo gris */
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   justify-content: center;
+  background-image: var(--fondo-certificado);
+
 }
 .contenido-certificado {
   margin: 0.5in; /* Margen interno entre el borde de la tarjeta y el contenido */
@@ -260,10 +294,10 @@ export default {
   .certificado-card {
     width: 8.5in; /* Ancho de la hoja carta */
     height: 11in; /* Alto de la hoja carta */
-    background-image: url("@/assets/images/certificado/certificado-0.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    background-image: var(--fondo-certificado);
   }
 }
 

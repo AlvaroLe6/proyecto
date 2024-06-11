@@ -55,7 +55,7 @@ onMounted(() => {
 
   buscarRegistrosEst();
     // Obtener el último fondo de certificado al montar el componente
-    obtenerFondoCertificado();
+    //obtenerFondoCertificado();
 });
 
 // exportar excel
