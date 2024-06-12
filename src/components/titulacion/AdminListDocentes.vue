@@ -13,11 +13,12 @@ const headers = ref([
   { title:'Profesión', text: 'Profesión', value: 'Profesion' },
   { title:'Correo', text: 'Correo', value: 'Correo' },
   { title:'Teléfono',text: 'Teléfono', value: 'Telefono' },
+  { title:'Área',text: 'Área', value: 'Nombre_Area' },
   { title: 'Acciones', key: 'actions', sortable: false },
 ]); 
 const registrosDocentes = ref([]);
-const filtroEtapa = ref(null);
-const filtroPrograma = ref(null);
+const filtroProfesion = ref(null);
+const filtroArea = ref(null);
 
 const buscarRegistrosDoc = async () => {
   try {
@@ -56,6 +57,7 @@ const exportToExcel = () => {
     profesion:item.Profesion,
     correo: item.Correo,
     telefono: item.Telefono,
+    area:item.Nombre_Area,
   })));
   
   const wb = XLSX.utils.book_new();
@@ -65,33 +67,33 @@ const exportToExcel = () => {
 
 const registrosFiltrados = computed(() => {
   return registrosDocentes.value.filter(registro => {
-    const etapaMatch = !filtroEtapa.value || registro.etapa_tramite === filtroEtapa.value;
-    const programaMatch = !filtroPrograma.value || registro.programa === filtroPrograma.value;
+    const profesionMatch = !filtroProfesion.value || registro.Profesion === filtroProfesion.value;
+    const areaMatch = !filtroArea.value || registro.Nombre_Area === filtroArea.value;
 
-    return etapaMatch && programaMatch;
+    return profesionMatch && areaMatch;
 
   })
 })
 function aplicarFiltros() {
   // Este método se llama cuando se cambian los filtros
-  console.log('Aplicando filtros:', { etapa: filtroEtapa.value })
+  console.log('Aplicando filtros:', { etapa: filtroProfesion.value })
 }
 
   // Funcion para limpiar los filtros 
 function limpiarFiltros() {
   //rangoFecha.value = [];
-  filtroEtapa.value = null;
-  filtroPrograma.value = null;
+  filtroProfesion.value = null;
+  filtroArea.value = null;
 }
-// Obtener las etapas para el filtrado
-const itemEtapa = computed(() => {
-  const etapas = registrosDocentes.value.map(item => item.etapa_tramite);
-  return [...new Set(etapas)];
+// Obtener las profesion para el filtrado
+const itemProfesion = computed(() => {
+  const profesion = registrosDocentes.value.map(item => item.Profesion);
+  return [...new Set(profesion)];
 });
-// Obtener los programas para el filtrado
-const itemPrograma = computed(() => {
-  const programas = registrosDocentes.value.map(item => item.programa);
-  return [...new Set(programas)];
+// Obtener los areas para el filtrado
+const itemArea = computed(() => {
+  const areas = registrosDocentes.value.map(item => item.Nombre_Area);
+  return [...new Set(areas)];
 });
 
 const openCertificadoConclusion = (item) => {
@@ -129,17 +131,17 @@ const openCertificadoDesarrollo = (item) => {
         ></v-text-field>        
         <v-select
           class="select-fase"
-          v-model="filtroPrograma"
-          :items="itemPrograma"
-          label="Programa"
+          v-model="filtroArea"
+          :items="itemArea"
+          label="Área"
           variant="outlined"
           @change="aplicarFiltros"
         ></v-select>
         <v-select
           class="select-fase"
-          v-model="filtroEtapa"
-          :items="itemEtapa"
-          label="Etapa"
+          v-model="filtroProfesion"
+          :items="itemProfesion"
+          label="Profesión"
           variant="outlined"
           @change="aplicarFiltros"
         ></v-select>

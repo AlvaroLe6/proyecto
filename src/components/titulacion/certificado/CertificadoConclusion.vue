@@ -58,20 +58,38 @@ const downloadPDF = () => {
   }
   
   const element = document.getElementById("certificado");
-  
-  const fondo = fondoCertificado.value || "@/assets/images/certificado/certificado-0.png"; // Ruta de respaldo si no hay fondo
 
+  // Asegura que la imagen de fondo se cargue con las cabeceras CORS
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.src = fondoCertificado.value;
 
-  html2canvas(element, { scale: 2 }).then((canvas) => {
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "in",
-      format: "letter",
+  img.onload = () => {
+    html2canvas(element, { 
+      scale: 2, 
+      useCORS: true, 
+      backgroundColor: null, // el fondo se renderiza correctamente
+      onclone: (document) => {
+        document.getElementById("certificado").style.backgroundImage = `url(${img.src})`;
+      }
+    }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "in",
+        format: "letter",
+      });
+      pdf.addImage(imgData, "PNG", 0, 0, 8.5, 11); // Ajusta las dimensiones al tamaño carta
+      pdf.save("certificado.pdf");
+    }).catch(err => {
+      console.error('Error al capturar el canvas:', err);
     });
-    pdf.addImage(imgData, "PNG", 0, 0, 8.5, 11); // Ajustando las dimensiones al tamaño carta
-    pdf.save("certificado.pdf");
-  });
+  };
+
+  img.onerror = (err) => {
+    console.error('Error al cargar la imagen de fondo:', err);
+  };
+
 };
 
 // Formatea la feche a "dd 'de' MMMM 'de' yyyy"
@@ -106,8 +124,6 @@ function actualizarCertificado() {
   snackbarColor.value = "green";
 
 }
-
-
 
 const obtenerFondoCertificado = async () => {
 try {
@@ -278,7 +294,6 @@ export default {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  /*background-color: white; /* Fondo blanco para evitar problemas de fondo gris */
   display: flex;
   flex-direction: column;
   box-sizing: border-box;

@@ -224,6 +224,7 @@ const handleFileUpload = async (event) => {
         class="icon-camera"
         @click="triggerSubirArchivo"
         color="cyan-accent-4"
+        v-tooltip="'Fondo del certificado'"
         large>
         mdi-camera
       </v-icon>
@@ -233,14 +234,6 @@ const handleFileUpload = async (event) => {
         accept="image/png, image/jpeg, image/bmp"
         style="display: none;"
         @change="handleFileUpload">
-      <v-btn
-        class="btn-subir"
-        prepend-icon="mdi-upload"
-        variant="outlined"
-       @click="triggerSubirArchivo" 
-        color="cyan-accent-4">
-        Subir
-      </v-btn> 
     </div>
     <v-spacer></v-spacer>
     <v-checkbox
@@ -253,18 +246,30 @@ const handleFileUpload = async (event) => {
 </v-toolbar>
 </template>
 <template v-slot:item.actions="{ item }">
+  <div class="actions-container">
   <v-icon 
       v-tooltip="'Certificado Conclusión'"
       color="deep-purple-darken-1"
       size="small" 
       class="mr-2" 
       @click="openCertificadoConclusion(item)">mdi-book-multiple</v-icon>
+      <span 
+      class="generated-point"
+      v-tooltip="'Certificado Conclusión'">
+      </span>
+    </div>
+    <div class="actions-container">
   <v-icon 
       v-tooltip="'Certificado Desarrollo'"
       color="indigo-lighten-1"
       size="small" 
       class="mr-2" 
       @click="openCertificadoDesarrollo(item)">mdi-book</v-icon>
+      <span 
+      class="generated-point"
+      v-tooltip="'Certificado Conclusión'">
+      </span>
+    </div>
       <!--
       <v-icon 
       color="green-accent-3"
@@ -309,6 +314,21 @@ const handleFileUpload = async (event) => {
   </v-snackbar>
 </template>
 <style>
+.actions-container {
+  display: flex;
+  align-items: center;
+}
+
+.generated-point {
+  margin-left: 8px;
+  margin-right: 8px;
+  background-color: red; /* Color del punto */
+  width: 12px; /* Tamaño del punto */
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
 .data-table{
   padding: 10px;
   border-collapse: collapse; /* Las líneas de la tabla no tienen espacios */

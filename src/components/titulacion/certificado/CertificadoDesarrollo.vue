@@ -1,10 +1,11 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { es } from 'date-fns/locale';
 import { format } from 'date-fns';
+import axios from 'axios';
 
 
 const route = useRoute();
@@ -20,6 +21,7 @@ const certficadoData = ref({
 });
 
 const fecha = ref('');
+const fondoCertificado = ref('');
 
 // Configura la fecha en español
 const esLocale = es;
@@ -42,16 +44,37 @@ const downloadPDF = () => {
   }
 
   const element = document.getElementById("certificado");
-  html2canvas(element, { scale: 2 }).then((canvas) => {
+
+// Asegura que la imagen de fondo se cargue con las cabeceras CORS
+const img = new Image();
+img.crossOrigin = "anonymous";
+img.src = fondoCertificado.value;
+
+img.onload = () => {
+  html2canvas(element, { 
+    scale: 2, 
+    useCORS: true, 
+    backgroundColor: null, // el fondo se renderiza correctamente
+    onclone: (document) => {
+      document.getElementById("certificado").style.backgroundImage = `url(${img.src})`;
+    }
+  }).then((canvas) => {
     const imgData = canvas.toDataURL("image/png");
     const pdf = new jsPDF({
       orientation: "portrait",
       unit: "in",
       format: "letter",
     });
-    pdf.addImage(imgData, "PNG", 0, 0, 8.5, 11); // Ajustando las dimensiones al tamaño carta
+    pdf.addImage(imgData, "PNG", 0, 0, 8.5, 11); // Ajusta las dimensiones al tamaño carta
     pdf.save("certificado.pdf");
+  }).catch(err => {
+    console.error('Error al capturar el canvas:', err);
   });
+};
+
+img.onerror = (err) => {
+  console.error('Error al cargar la imagen de fondo:', err);
+};
 };
 
 // Formatea la feche a "dd 'de' MMMM 'de' yyyy"
@@ -79,6 +102,23 @@ function actualizarCertificado() {
   snackbarColor.value = "green";
 
 }
+const obtenerFondoCertificado = async () => {
+try {
+  const response = await axios.get('http://localhost:3000/api/fondo_certificados');
+  fondoCertificado.value = `http://localhost:3000/${response.data.Ruta}`;
+  console.log("fondo del certificado", fondoCertificado.value);
+
+  //console.log("askasdkasdjlasdjadlsj",document.documentElement.style.setProperty('--fondo-certificado', `url(${fondoCertificado.value})`))
+  document.documentElement.style.setProperty('--fondo-certificado', `url(${fondoCertificado.value})`);
+
+} catch (error) {
+  console.error('Error al obtener el fondo del certificado:', error);
+}
+};
+
+onMounted(  () => {
+  obtenerFondoCertificado();
+})
 </script>
 
 <template>
@@ -116,7 +156,10 @@ function actualizarCertificado() {
   <v-container class="d-flex justify-center align-center">
     <v-row justify="center">
       <v-col cols="12" class="d-flex justify-center">
-        <v-card id="certificado" class="pa-5 certificado-card" elevation="2">
+        <v-card 
+        id="certificado" 
+        class="pa-5 certificado-card" 
+        elevation="2">
           <div class="text-center-cab mb-5">
             <h3 class="mt-3">Escuela de Negocios ESAM</h3>
             <p><em>"Por qué el éxito no es producto de la casualidad"</em></p>
@@ -184,16 +227,18 @@ export default {
 };
 </script>
   
-  <style>
+<style>
+:root {
+  --fondo-certificado: url("");
+}
 
 .certificado-card {
   width: 8.5in; /* Ancho de la hoja carta */
   height: 11in; /* Alto de la hoja carta */
-  background-image: url("@/assets/images/certificado/certificado-0.png");
+  background-image: var(--fondo-certificado);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-color: white; /* Fondo blanco para evitar problemas de fondo gris */
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -210,7 +255,7 @@ export default {
   .certificado-card {
     width: 8.5in; /* Ancho de la hoja carta */
     height: 11in; /* Alto de la hoja carta */
-    background-image: url("@/assets/images/certificado/certificado-0.png");
+    background-image: var(--fondo-certificado);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
