@@ -11,6 +11,7 @@ import axios from 'axios';
 const route = useRoute();
 
 const certficadoData = ref({
+  cod_estudiante:route.query.cod_estudiante,
   num_doc: route.query.num_doc,
   nombre: route.query.nombre,
   apellido: route.query.apellido,
@@ -80,17 +81,39 @@ const downloadPDF = () => {
         format: "letter",
       });
       pdf.addImage(imgData, "PNG", 0, 0, 8.5, 11); // Ajusta las dimensiones al tamaño carta
-      pdf.save("certificado.pdf");
-    }).catch(err => {
-      console.error('Error al capturar el canvas:', err);
-    });
-  };
+     // pdf.save("certificado.pdf");
 
-  img.onerror = (err) => {
-    console.error('Error al cargar la imagen de fondo:', err);
-  };
+      // Guardar el PDF en un Blob
 
-};
+      const pdfBlob = pdf.output('blob');
+      const formData = new FormData();
+      formData.append('file', pdfBlob, 'certificado.pdf');
+      formData.append('Cod_Estudiante', certficadoData.value.cod_estudiante); 
+      formData.append('Estudiante', certficadoData.value.nombre + ' ' + certficadoData.value.apellido);
+      formData.append('CargaHoraria', cargaHoraria.value);
+
+      console.log("me muestra el codigo del estudiante", certficadoData.value.cod_estudiante)
+
+      // Enviar los datos al servidor
+      axios.post('http://localhost:3000/api/certificado_conclusion', formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            }).then(response => {
+              console.log('Certificado guardado en la base de datos:', response.data);
+              pdf.save("certificado.pdf"); // Descargar el PDF
+            }).catch(error => {
+              console.error('Error al guardar el certificado en la base de datos:', error);
+            });
+          }).catch(err => {
+            console.error('Error al capturar el canvas:', err);
+          });
+        };
+        img.onerror = (err) => {
+          console.error('Error al cargar la imagen de fondo:', err);
+        };
+
+      };
 
 // Formatea la feche a "dd 'de' MMMM 'de' yyyy"
 const formatFecha = (date) => {

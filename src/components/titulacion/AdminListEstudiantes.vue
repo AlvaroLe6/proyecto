@@ -117,7 +117,7 @@ const itemPrograma = computed(() => {
 });
 
 const openCertificadoConclusion = (item) => {
-  const url = `/admin/certificado-conclusion?num_doc=${item.num_doc}&nombre=${item.nombre}&apellido=${item.apellidoPersona}&ci=${item.ci}&tipo=${item.tipo}&programa=${item.programa}&sede=${item.sede}&fecha=${item.fecha}`;
+  const url = `/admin/certificado-conclusion?cod_estudiante=${item.cod_estudiante}&num_doc=${item.num_doc}&nombre=${item.nombre}&apellido=${item.apellidoPersona}&ci=${item.ci}&tipo=${item.tipo}&programa=${item.programa}&sede=${item.sede}&fecha=${item.fecha}`;
   window.open(url, '_blank');
 };
 const openCertificadoDesarrollo = (item) => {
@@ -234,6 +234,24 @@ const handleFileUpload = async (event) => {
         accept="image/png, image/jpeg, image/bmp"
         style="display: none;"
         @change="handleFileUpload">
+       <div>
+        <v-row>
+          <v-col clos="12">
+            <v-row class="status-row">
+              <span 
+              class="point-text-generado">
+              </span>
+              <span>Generado</span>
+            </v-row>
+            <v-row class="status-row">
+              <span 
+              class="point-text-no-generado">
+              </span>
+              <span>Sin generar</span>  
+            </v-row>
+          </v-col>
+        </v-row>
+       </div> 
     </div>
     <v-spacer></v-spacer>
     <v-checkbox
@@ -318,13 +336,30 @@ const handleFileUpload = async (event) => {
   display: flex;
   align-items: center;
 }
-
-.generated-point {
-  margin-left: 8px;
-  margin-right: 8px;
+.status-row {
+  display: flex;
+  align-items: center;
+}
+.point-text-generado {
+  margin-right: 3px;
+  background-color: green; /* Color del punto */
+  width: 9px; /* Tamaño del punto */
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.point-text-no-generado {
+  margin-right: 3px;
   background-color: red; /* Color del punto */
-  width: 12px; /* Tamaño del punto */
-  height: 12px;
+  width: 9px; /* Tamaño del punto */
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.generated-point {
+  background-color: red; /* Color del punto */
+  width: 10px; /* Tamaño del punto */
+  height: 10px;
   border-radius: 50%;
   display: inline-block;
 }

@@ -43,6 +43,11 @@ const router = createRouter({
       component: () => import('../views/titulacion/AdminListDocentesView.vue')
     },
     {
+      path: '/list-certificados',
+      name: 'list-certificados',
+      component: () => import('../views/titulacion/certificado/AdminListCertificadosView.vue')
+    },
+    {
       path: '/admin',
       mane: 'admin',
       component: () => import('../views/admin/AdminLayout.vue'),

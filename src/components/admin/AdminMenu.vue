@@ -41,9 +41,18 @@ console.log("Nombre de usuario cargado:", userProfile.value.username);
 
               <v-list-item-title>Estudiantes</v-list-item-title>
             </v-list-item>
+            <!-- Lista de Docentes -->
+              <v-list-item :to="{ name: 'list-docentes' }">
+              <template #prepend>
+                <v-icon class="me-2" icon="mdi-account-network" size="22" />
+              </template>
 
+              <v-list-item-title>
+                Docentes
+              </v-list-item-title>
+            </v-list-item>
             <!-- Listado de certificados -->
-            <v-list-item link>
+            <v-list-item :to="{ name: 'list-certificados' }">
               <template #prepend>
                 <v-icon class="me-2" icon="mdi-account-box" size="22" />
               </template>
@@ -53,16 +62,7 @@ console.log("Nombre de usuario cargado:", userProfile.value.username);
               </v-list-item-title>
             </v-list-item>
 
-            <!-- Lista de Docentes -->
-            <v-list-item :to="{ name: 'list-docentes' }">
-              <template #prepend>
-                <v-icon class="me-2" icon="mdi-account-network" size="22" />
-              </template>
-
-              <v-list-item-title>
-                Docentes
-              </v-list-item-title>
-            </v-list-item>
+           
           </v-list>
         </v-menu>
         <!-- !SECTION -->
