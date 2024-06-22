@@ -13,9 +13,11 @@
     "@vuepic/vue-datepicker": "^8.3.1",
     "axios": "^1.6.5",
     "date-fns": "^3.6.0",
+    "express-fileupload": "^1.5.0",
     "firebase": "^10.9.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.1",
+    "multer": "^1.4.5-lts.1",
     "pinia": "^2.1.7",
     "uid": "^2.0.2",
     "vee-validate": "^4.11.8",
@@ -24,6 +26,7 @@
     "vuefire": "^3.1.18",
     "vuetify": "^3.6.0-beta.0.0",
     "vuex": "^4.0.2",
+    "ws": "^8.17.1",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

@@ -3,7 +3,14 @@
 import { ref, onMounted, computed  } from "vue";
 import axios from "axios";
 import * as XLSX from 'xlsx';
+const ws = new WebSocket('ws://localhost:8080');
 
+ws.onmessage = (message) => {
+  const data = JSON.parse(message.data);
+  if (data.Cod_Estudiante) {
+    certificadosGenerados.value[data.Cod_Estudiante] = true;
+  }
+};
 const headers = ref([
   { title: 'Nro. Carnet',text: 'Nro. Carnet',align: 'start',
           sortable: false,
@@ -26,11 +33,13 @@ const filtroEtapa = ref(null);
 const filtroPrograma = ref(null);
 
 const subirArchivo = ref(null);
-const fondoCertificado = ref('');
 
 const snackbar = ref(false);
 const snackbarText = ref("");
 const snackbarColor = ref("");
+
+// Maneja los certificados generados
+const certificadosGenerados = ref({}); 
 
 const buscarRegistrosEst = async () => {
   try {
@@ -39,6 +48,8 @@ const buscarRegistrosEst = async () => {
     );
     if (response.data) {
       registrosEstudiantes.value = response.data;
+      // Llama a la función para verificar el estados de los certificados
+      await verificarCertificados(); 
       console.log("los datos de los clientes: ",registrosEstudiantes.value)
      
       // Asegúrate de que la respuesta incluya el campo 'nombre'
@@ -50,14 +61,17 @@ const buscarRegistrosEst = async () => {
     nombrePersona.value = "Error en la búsqueda";
   }
 };
-// Llama a buscarRegistrosEst para inicializar la tabla con datos
+// Inicializar registros y verificar certificados
 onMounted(() => {
-
   buscarRegistrosEst();
-    // Obtener el último fondo de certificado al montar el componente
-    //obtenerFondoCertificado();
-});
+  verificarCertificados();
 
+});
+// Función para actualizar la tabla
+const initialize = async () => {
+  await buscarRegistrosEst();
+  await verificarCertificados();
+};
 // exportar excel
 const exportToExcel = () => {
   if (!registrosEstudiantes.value.length) {
@@ -117,8 +131,10 @@ const itemPrograma = computed(() => {
 });
 
 const openCertificadoConclusion = (item) => {
-  const url = `/admin/certificado-conclusion?cod_estudiante=${item.cod_estudiante}&num_doc=${item.num_doc}&nombre=${item.nombre}&apellido=${item.apellidoPersona}&ci=${item.ci}&tipo=${item.tipo}&programa=${item.programa}&sede=${item.sede}&fecha=${item.fecha}`;
-  window.open(url, '_blank');
+  if (!certificadosGenerados.value[item.cod_estudiante]) {
+    const url = `/admin/certificado-conclusion?cod_estudiante=${item.cod_estudiante}&num_doc=${item.num_doc}&nombre=${item.nombre}&apellido=${item.apellidoPersona}&ci=${item.ci}&tipo=${item.tipo}&programa=${item.programa}&sede=${item.sede}&fecha=${item.fecha}`;
+    window.open(url, '_blank');
+  }
 };
 const openCertificadoDesarrollo = (item) => {
   const url = `/admin/certificado-desarrollo?num_doc=${item.num_doc}&nombre=${item.nombre}&apellido=${item.apellidoPersona}&ci=${item.ci}&tipo=${item.tipo}&programa=${item.programa}&sede=${item.sede}&fecha=${item.fecha}`;
@@ -155,6 +171,24 @@ const handleFileUpload = async (event) => {
     snackbarColor.value = "red";
   }
 };
+
+// Verifica los certificados generados
+const verificarCertificados = async () => {
+  try {
+    const response = await axios.get(`http://localhost:3000/api/buscar-estudiante-certificado-conclusion`);
+    if (response.data) {
+      const certificados = response.data;
+      certificados.forEach(cert => {
+        certificadosGenerados.value[cert.Cod_Estudiante] = true;
+      });
+    } else {
+      console.error("No se encontraron certificados.");
+    }
+  } catch (error) {
+    console.error("Error al verificar certificados:", error);
+  }
+};
+
 
 </script>
 
@@ -270,10 +304,15 @@ const handleFileUpload = async (event) => {
       color="deep-purple-darken-1"
       size="small" 
       class="mr-2" 
-      @click="openCertificadoConclusion(item)">mdi-book-multiple</v-icon>
+       @click="!certificadosGenerados[item.cod_estudiante] && openCertificadoConclusion(item)"
+      :disabled="certificadosGenerados[item.cod_estudiante]"
+      :class="{'disabled-icon': certificadosGenerados[item.cod_estudiante]}"
+      >mdi-book-multiple</v-icon>
       <span 
-      class="generated-point"
-      v-tooltip="'Certificado Conclusión'">
+      :class="certificadosGenerados[item.cod_estudiante] ? 'point-text-generado' : 'point-text-no-generado'"
+      v-tooltip="'Certificado Conclusión'"
+      class="status-point"
+      >
       </span>
     </div>
     <div class="actions-container">
@@ -284,35 +323,10 @@ const handleFileUpload = async (event) => {
       class="mr-2" 
       @click="openCertificadoDesarrollo(item)">mdi-book</v-icon>
       <span 
-      class="generated-point"
-      v-tooltip="'Certificado Conclusión'">
+      class="point-text-no-generado"
+      v-tooltip="'Certificado Desarrollo'">
       </span>
     </div>
-      <!--
-      <v-icon 
-      color="green-accent-3"
-      size="small" 
-      class="mr-2" 
-      @click="openFaseDialog(item)">mdi-cached</v-icon>
-
-      <v-icon 
-      color="blue-darken-2"
-      size="small" 
-      class="mr-2" 
-      @click="showDetails(item)"> mdi-eye</v-icon>
-
-      <v-icon 
-      color="blue-grey-darken-2"
-      size="small" 
-      class="mr-2" 
-      @click="openEditDialog(item)"> mdi-pencil</v-icon>
-
-      <v-icon
-      color="red-darken-2"
-      size="small" 
-      class="mr-2"
-       @click="openDeleteDialog(item)"> mdi-delete</v-icon>
--->
     </template>
     <template v-slot:no-data>
       <v-btn color="primary" @click="initialize">
@@ -356,14 +370,10 @@ const handleFileUpload = async (event) => {
   border-radius: 50%;
   display: inline-block;
 }
-.generated-point {
-  background-color: red; /* Color del punto */
-  width: 10px; /* Tamaño del punto */
-  height: 10px;
-  border-radius: 50%;
-  display: inline-block;
+.disabled-icon {
+  opacity: 0.5;
+  pointer-events: none; /* Deshabilita los clics en el icono */
 }
-
 .data-table{
   padding: 10px;
   border-collapse: collapse; /* Las líneas de la tabla no tienen espacios */

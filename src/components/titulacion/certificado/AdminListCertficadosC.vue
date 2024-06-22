@@ -2,195 +2,64 @@
 
 import { ref, onMounted, computed  } from "vue";
 import axios from "axios";
-import * as XLSX from 'xlsx';
 
 const headers = ref([
   { title: 'Nro. Carnet',text: 'Nro. Carnet',align: 'start',
           sortable: false,
           key: 'Carnet' },
   { title:'Nombre', text: 'Nombre', value: 'Nombre' },
-  { title:'Apellido',text: 'Apellido', value: 'Apellidos' },
-  { title:'Profesión', text: 'Profesión', value: 'Profesion' },
-  { title:'Correo', text: 'Correo', value: 'Correo' },
+  { title:'Apellido',text: 'Apellido', value: 'Apellido' },
   { title:'Teléfono',text: 'Teléfono', value: 'Telefono' },
-  { title:'Área',text: 'Área', value: 'Nombre_Area' },
+  { title:'Fecha Generacion', text: 'Fecha Generacion', value: 'FechaGeneracion' },
   { title: 'Acciones', key: 'actions', sortable: false },
 ]); 
-const registrosDocentes = ref([]);
-const filtroProfesion = ref(null);
-const filtroArea = ref(null);
+const registrosCertificados = ref([]);
 
-const buscarRegistrosDoc = async () => {
+const buscarRegistrosCer = async () => {
   try {
     const response = await axios.get(
-      `http://localhost:3000/api/buscar-docentes`
+      `http://localhost:3000/api/buscar-estudiante-certificado-conclusion`
     );
     if (response.data) {
-      registrosDocentes.value = response.data;
-      console.log("los datos de los docentes: ",registrosDocentes.value)
+      registrosCertificados.value = response.data;
+      console.log("los datos de los certificados: ",registrosCertificados.value)
      
     } else {
-      nombreDocente.value = "Docente no encontrado";
+      nombreDocente.value = "certificados no encontrado";
     }
   } catch (error) {
-    console.error("Error al buscar docente:", error);
+    console.error("Error al buscar los certificados:", error);
     nombreDocente.value = "Error en la búsqueda";
   }
 };
-// Llama a buscarRegistrosDoc para inicializar la tabla con datos
+// Llama a buscarRegistrosCer para inicializar la tabla con datos
 onMounted(() => {
-
-  buscarRegistrosDoc();
+  buscarRegistrosCer();
 });
-
-// exportar excel
-const exportToExcel = () => {
-  if (!registrosDocentes.value.length) {
-    console.error('No hay datos para exportar.');
-    return;
-  }
-
-  const ws = XLSX.utils.json_to_sheet(registrosDocentes.value.map(item => ({
-    ci:item.Carnet,
-    nombres: item.Nombre,
-    apellidos: item.Apellidos,
-    profesion:item.Profesion,
-    correo: item.Correo,
-    telefono: item.Telefono,
-    area:item.Nombre_Area,
-  })));
-  
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Registros");
-  XLSX.writeFile(wb, "Registros.xlsx");
+// Función para descargar el certificado PDF
+const downloadCertificado = (archivoPath) => {
+  window.open(`http://localhost:3000/${archivoPath}`, '_blank');
 };
 
-const registrosFiltrados = computed(() => {
-  return registrosDocentes.value.filter(registro => {
-    const profesionMatch = !filtroProfesion.value || registro.Profesion === filtroProfesion.value;
-    const areaMatch = !filtroArea.value || registro.Nombre_Area === filtroArea.value;
-
-    return profesionMatch && areaMatch;
-
-  })
-})
-function aplicarFiltros() {
-  // Este método se llama cuando se cambian los filtros
-  console.log('Aplicando filtros:', { etapa: filtroProfesion.value })
-}
-
-  // Funcion para limpiar los filtros 
-function limpiarFiltros() {
-  //rangoFecha.value = [];
-  filtroProfesion.value = null;
-  filtroArea.value = null;
-}
-// Obtener las profesion para el filtrado
-const itemProfesion = computed(() => {
-  const profesion = registrosDocentes.value.map(item => item.Profesion);
-  return [...new Set(profesion)];
-});
-// Obtener los areas para el filtrado
-const itemArea = computed(() => {
-  const areas = registrosDocentes.value.map(item => item.Nombre_Area);
-  return [...new Set(areas)];
-});
-
-const openCertificadoConclusion = (item) => {
-  const url = `/admin/certificado-conclusion?num_doc=${item.num_doc}&nombre=${item.nombre}&apellido=${item.apellidoPersona}&ci=${item.ci}&tipo=${item.tipo}&programa=${item.programa}&sede=${item.sede}&fecha=${item.fecha}`;
-  window.open(url, '_blank');
-};
-const openCertificadoDesarrollo = (item) => {
-  const url = `/admin/certificado-desarrollo?num_doc=${item.num_doc}&nombre=${item.nombre}&apellido=${item.apellidoPersona}&ci=${item.ci}&tipo=${item.tipo}&programa=${item.programa}&sede=${item.sede}&fecha=${item.fecha}`;
-  window.open(url, '_blank');
-};
 </script>
 
 <template>
   <v-data-table 
   class="data-table"   
-  v-if="registrosDocentes.length" 
+  v-if="registrosCertificados.length" 
   :headers="headers" 
-  :items="registrosFiltrados"
+  :items="registrosCertificados"
   :items-per-page="10"
   :sort-by="[{ key: 'num_doc', order: 'asc' }]">
     
-  <template v-slot:top>
-     <!-- 
-    <v-toolbar class="toolbar-tabla" flat>
-        <div class="container-filtros">
-          <v-text-field
-          class="text-field-buscar"
-          label="Buscar"
-          clearable     
-          variant="outlined"
-          @change="aplicarFiltros"
-        ></v-text-field>        
-        <v-select
-          class="select-fase"
-          v-model="filtroArea"
-          :items="itemArea"
-          label="Área"
-          variant="outlined"
-          @change="aplicarFiltros"
-        ></v-select>
-        <v-select
-          class="select-fase"
-          v-model="filtroProfesion"
-          :items="itemProfesion"
-          label="Profesión"
-          variant="outlined"
-          @change="aplicarFiltros"
-        ></v-select>
 
-        <v-btn 
-        class="btn-limpiar-filtro"
-        variant="outlined"
-        @click="limpiarFiltros">
-        Limpiar Filtros
-      </v-btn>
-        <v-btn 
-        class="btn-actualizar"
-        prepend-icon="mdi-cached"
-        variant="outlined"
-        color="primary" dark 
-       @click="initialize">
-          Actualizar
-        </v-btn>
-        <v-btn
-        class="btn-descargar" 
-        prepend-icon="mdi-download"
-        variant="outlined"
-        color="success" 
-        @click="exportToExcel">
-        Excel
-      </v-btn>
-
-    </div>
-    <v-spacer></v-spacer>
-    <v-checkbox
-    class="checkbox-ver-detalles"
-    label="Ver detalles adicionales"
-    v-model="showExtraColumns"
-    color="success"
-    @change="toggleExtraColumns"
-  ></v-checkbox>
-</v-toolbar>
--->
-</template>
 <template v-slot:item.actions="{ item }">
   <v-icon 
-      v-tooltip="'Certificado Conclusión'"
-      color="deep-purple-darken-1"
+      v-tooltip="'Ver Certificado'"
+      color="green-darken-1"
       size="small" 
       class="mr-2" 
-      @click="openCertificadoConclusion(item)">mdi-book-multiple</v-icon>
-  <v-icon 
-      v-tooltip="'Certificado Desarrollo'"
-      color="indigo-lighten-1"
-      size="small" 
-      class="mr-2" 
-      @click="openCertificadoDesarrollo(item)">mdi-book</v-icon>
+      @click="downloadCertificado(item.ArchivoCertificado)">mdi-eye</v-icon>
 
     </template>
     <template v-slot:no-data>

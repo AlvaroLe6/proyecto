@@ -36,6 +36,7 @@ const snackbarColor = ref("");
 // Variable para ocultar fecha
 const showFecha = ref(false); // Variable para mostrar/ocultar ver más detalles
 
+const certificadoGenerado = ref(false);
 
 
 // Propiedad calculada para obtener el valor de Tipo de programa en mayúsculas
@@ -81,7 +82,6 @@ const downloadPDF = () => {
         format: "letter",
       });
       pdf.addImage(imgData, "PNG", 0, 0, 8.5, 11); // Ajusta las dimensiones al tamaño carta
-     // pdf.save("certificado.pdf");
 
       // Guardar el PDF en un Blob
 
@@ -101,7 +101,13 @@ const downloadPDF = () => {
               }
             }).then(response => {
               console.log('Certificado guardado en la base de datos:', response.data);
-              pdf.save("certificado.pdf"); // Descargar el PDF
+              // Descargar el PDF
+              pdf.save("certificado.pdf"); 
+               // Actualizar el estado del certificado generado y mostrar mensaje
+                certificadoGenerado.value = true;
+                snackbarText.value = "Certificado generado";
+                snackbar.value = true;
+                snackbarColor.value = "green";
             }).catch(error => {
               console.error('Error al guardar el certificado en la base de datos:', error);
             });
@@ -153,7 +159,7 @@ try {
   const response = await axios.get('http://localhost:3000/api/fondo_certificados');
   fondoCertificado.value = `http://localhost:3000/${response.data.Ruta}`;
   console.log("fondo del certificado", fondoCertificado.value);
-
+  
   //console.log("askasdkasdjlasdjadlsj",document.documentElement.style.setProperty('--fondo-certificado', `url(${fondoCertificado.value})`))
   document.documentElement.style.setProperty('--fondo-certificado', `url(${fondoCertificado.value})`);
 
@@ -161,9 +167,25 @@ try {
   console.error('Error al obtener el fondo del certificado:', error);
 }
 };
+// Verifica el certificado generado
+const verificarCertificadoGenerado = async () => {
+  try {
+    const response = await axios.get(`http://localhost:3000/api/verificar-certificado-conclusion/${certficadoData.value.cod_estudiante}`);
+    if (response.data.certificadoGenerado) {
+      console.log("verrrrrrrrrrrr",response)
+      certificadoGenerado.value = true;
+    }
+  } catch (error) {
+    console.error('Error al verificar el estado del certificado:', error);
+  }
+};
+
+
 
 onMounted(  () => {
   obtenerFondoCertificado();
+  verificarCertificadoGenerado();
+
 });
 </script>
 
@@ -283,6 +305,7 @@ onMounted(  () => {
   </v-container>
   <v-row justify="center">
     <v-btn color="success" @click="downloadPDF" class="mt-5"
+    :disabled="certificadoGenerado"
       >Descargar PDF</v-btn
     >
   </v-row>
