@@ -15,7 +15,7 @@
     <v-app>
         <v-app-bar app color="#162D4B" class="app-bar" >
           <div class="nav-container">
-            <router-link :to="{ name: 'login' }"  class="logo-link">
+            <router-link :to="{ name: 'inicio' }"  class="logo-link">
               <img
                 src="@/assets/ESCUELA DE NEGOCIOS_HORIZONTAL BLANCO.png"
                 alt="Logo"
@@ -29,9 +29,23 @@
             <AdminMenu v-if="auth.isAuth" />
           </div>
               <UserProfile v-if="auth.isAuth" />
-              <v-btn 
-              v-else
-              :to="{ name: 'login' }"> Iniciar Sesión </v-btn>
+              <div v-if="!auth.isAuth">
+            <v-btn 
+              color="teal-lighten-3"
+              prepend-icon="mdi-check-circle"
+              variant="outlined"
+              :to="{ name: 'seg-tramite' }"
+            > 
+              Seguimiento trámite
+            </v-btn>
+          
+            <v-btn 
+
+              :to="{ name: 'login' }"
+            > 
+              Iniciar Sesión 
+            </v-btn>
+          </div>
             
           </div>
         </div>

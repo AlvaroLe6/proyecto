@@ -48,6 +48,11 @@ const router = createRouter({
       component: () => import('../views/titulacion/certificado/AdminListCertificadosView.vue')
     },
     {
+      path: '/inicio',
+      name: 'inicio',
+      component: () => import('../views/OfertaAcademicaView.vue')
+    },
+    {
       path: '/admin',
       mane: 'admin',
       component: () => import('../views/admin/AdminLayout.vue'),
@@ -89,6 +94,20 @@ const router = createRouter({
           path: '/admin/certificado-desarrollo',
           name: 'certificado-desarrollo',
           component: () => import('../views/titulacion/certificado/CertificadoDesarrolloViews.vue'),
+          meta: { requiresAuth: true },
+
+        },
+        {
+          path: '/admin/list-programas',
+          name: 'admin-list-programas',
+          component: () => import('../views/admin/ListProgramasView.vue'),
+          meta: { requiresAuth: true },
+
+        },
+        {
+          path: '/admin/list-insc-programa',
+          name: 'admin-list-insc-programa',
+          component: () => import('../views/admin/ListInscProgramaView.vue'),
           meta: { requiresAuth: true },
 
         },

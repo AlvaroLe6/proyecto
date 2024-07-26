@@ -25,7 +25,7 @@ const headers = ref([
   { title:'Tipo',text: 'Tipo', value: 'tipo' },
   { title:'Programa',text: 'Programa', value: 'programa' },
   { title: 'Sede',text: 'Sede', value: 'sede' },
-  { title:'Fecha Inscripcion',text: 'Fecha Inscripcion', value: 'fechaInscripcion' },
+  //{ title:'Fecha Inscripcion',text: 'Fecha Inscripcion', value: 'fechaInscripcion' },
   { title: 'Acciones', key: 'actions', sortable: false },
 ]); 
 const registrosEstudiantes = ref([]);

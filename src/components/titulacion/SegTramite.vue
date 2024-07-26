@@ -1,10 +1,30 @@
 <script setup>
+
+import { useRoute } from "vue-router";
 import { collection } from "firebase/firestore";
 import { useCollection } from "vuefire";
 import { ref, computed } from "vue";
 import { db } from "@/config/firebase";
 import axios from "axios";
 
+import tramiteEsam from "@/components/titulacion/Requisitos/tramiteEsam.vue";
+import tramitePersonal from "@/components/titulacion/Requisitos/tramitePersonal.vue";
+
+const route = useRoute();
+const activeTab = ref(route.params.tab);
+// tabs
+const tabs = [
+  {
+    title: "TITULACIÓN CON ESAM",
+    icon: "ri-group-line",
+    tab: "tramite-esam",
+  },
+  {
+    title: "TITULACIÓN PERSONAL",
+    icon: "ri-lock-line",
+    tab: "tramite-personal",
+  },
+];
 const etapasProcesoExTCollection = useCollection(
   collection(db, "etapasProcesoExT")
 );
@@ -21,6 +41,7 @@ const sede = ref("");
 const inicio_tramite = ref("");
 const estado = ref("");
 const etapa_tramite = ref("");
+const fase_tramite = ref("");
 
 // Variables para el snackbar al momento de buscar a una persona
 const snackbar = ref(false);
@@ -43,7 +64,8 @@ const buscarPersona = async () => {
       inicio_tramite.value = response.data.inicio_tramite;
       estado.value = response.data.estado;
       etapa_tramite.value = response.data.etapa_tramite;
-      activeStep.value = parseInt(etapa_tramite.value);
+      fase_tramite.value = response.data.fase_tramite;
+      activeStep.value = parseInt(fase_tramite.value);
       console.log("etapa del tramite", activeStep.value);
 
       // Mostrar los resultados después de busqueda
@@ -52,7 +74,6 @@ const buscarPersona = async () => {
       nackbarText.value = "Datos encontrados";
       snackbar.value = true;
       snackbarColor.value = "green";
-
     } else {
       nombrePersona.value = "Persona no encontrada";
       showResults.value = false;
@@ -61,15 +82,13 @@ const buscarPersona = async () => {
       nackbarText.value = "Persona no encontrada";
       snackbar.value = true;
       snackbarColor.value = "red";
-      
-      
     }
   } catch (error) {
     console.error("Error al buscar persona:", error);
     nombrePersona.value = "Error en la búsqueda";
     showResults.value = false;
 
-  // Mostrar snackbar con mensaje de error
+    // Mostrar snackbar con mensaje de error
     nackbarText.value = "Error en la búsqueda";
     snackbar.value = true;
     snackbarColor.value = "red";
@@ -83,116 +102,80 @@ const textoSeleccionar = "Seleccionar";
 const itemsEtapa1 = ref([
   {
     id: 1,
-    title: "Aprobar todos los módulos",
-    subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+    title: "ETAPA 1",
+    subtitle: "ENTREGA DE CARPETAS ACADÉMICAS",
   },
   {
     id: 2,
-    title: "Estar con sus cuotas al dia",
+    title: "ETAPA 2",
     subtitle:
-      "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+      "ENTREGA DE MONOGRAFÍAS",
   },
   {
     id: 3,
-    title: "Presentación de monografia",
+    title: "ETAPA 3",
     subtitle:
-      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
+      "REVISIÓN DE TRABAJO DE GRADO",
+  },
+  {
+    id: 4,
+    title: "ETAPA 4",
+    subtitle:
+      "LLENADO Y FIRMA DE CERTIFICADO DE CALIFICACIONES",
   },
 ]);
 const itemsEtapa2 = ref([
   {
     id: 1,
-    title: "Item 1",
-    subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+    title: "ETAPA 5",
+    subtitle: "REVISIÓN Y APROBACIÓN DE PODERES",
   },
   {
     id: 2,
-    title: "Item 2",
+    title: "ETAPA 6",
     subtitle:
-      "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+      "LEGALIZACIÓN DE DOCUMENTOS DE TITULACIÓN",
   },
   {
     id: 3,
-    title: "Item 3",
+    title: "ETAPA 7",
     subtitle:
-      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
+      "ADQUISICIÓN Y LLENADO DE LA HOJA A",
+  },
+  {
+    id: 4,
+    title: "ETAPA 8",
+    subtitle:
+      "ARMADO DE FOLDERS DE TITULACIÓN",
   },
 ]);
 const itemsEtapa3 = ref([
   {
     id: 1,
-    title: "Item 1",
-    subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
-  },
-  {
-    id: 2,
-    title: "Item 2",
-    subtitle:
-      "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-  },
-  {
-    id: 3,
-    title: "Item 3",
-    subtitle:
-      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
+    title: "ETAPA 9",
+    subtitle: "INGRESO A TÍTULOS Y DIPLOMAS",
   },
 ]);
 
 const itemsEtapa4 = ref([
   {
     id: 1,
-    title: "Item 1",
+    title: "ETAPA 10",
     subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
-  },
-  {
-    id: 2,
-    title: "Item 2",
-    subtitle:
-      "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-  },
-  {
-    id: 3,
-    title: "Item 3",
-    subtitle:
-      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
   },
 ]);
 const itemsEtapa5 = ref([
   {
     id: 1,
-    title: "Item 1",
-    subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
-  },
-  {
-    id: 2,
-    title: "Item 2",
-    subtitle:
-      "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-  },
-  {
-    id: 3,
-    title: "Item 3",
-    subtitle:
-      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
+    title: "ETAPA 11",
+    subtitle: "ENTREGA DE TÍTULOS",
   },
 ]);
 const itemsEtapa6 = ref([
   {
     id: 1,
-    title: "Item 1",
-    subtitle: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
-  },
-  {
-    id: 2,
-    title: "Item 2",
-    subtitle:
-      "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-  },
-  {
-    id: 3,
-    title: "Item 3",
-    subtitle:
-      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
+    title: "ETAPA 12",
+    subtitle: "ENTREGA DE TITULOS",
   },
 ]);
 const currentItems = computed(() => {
@@ -218,7 +201,7 @@ const toggleDetails = () => {
   showDetails.value = !showDetails.value;
 };
 </script>
-    <script>
+<script>
 import { mapState, mapActions } from "vuex";
 
 export default {
@@ -248,15 +231,15 @@ export default {
 
 <template>
   <v-card max-width="1200" flat class="mx-auto my-10" elevation="3">
-    <v-card-title class="text-h4" tag="h3"> Tramites </v-card-title>
+    <v-card-title class="text-h4" tag="h3"> Trámites </v-card-title>
     <v-card-subtitle class="text-h5 py-5">
-      Seguimineto de titulación
+      Seguimiento de titulación
     </v-card-subtitle>
     <v-row>
       <v-col cols="12">
         <v-card>
-          <VDivider />
-          <v-card-title>
+          <v-divider />
+           <v-card-title>
             <!-- Formulario -->
             <VForm class="mt-6">
               <v-row>
@@ -273,23 +256,6 @@ export default {
                     outlined
                     dense
                   ></v-text-field>
-                </v-col>
-
-                <!-- Fecha nacimiento -->
-                <v-col cols="12" md="4">
-                  <v-text>Fecha de nacimiento</v-text>
-                  <VueDatePicker
-                    class="flex-grow-1"
-                    v-model="fechaFin"
-                    locale="es"
-                    :teleport="true"
-                    :enable-time-picker="false"
-                    placeholder="Fecha de fin"
-                    :year-range="[1960, 2060]"
-                    :cancel-text="textoCancelar"
-                    :select-text="textoSeleccionar"
-                  >
-                  </VueDatePicker>
                 </v-col>
 
                 <!-- Boton de buscar -->
@@ -320,125 +286,139 @@ export default {
       <v-col cols="12">
         <v-card>
           <v-card-title class="d-flex"> </v-card-title>
-          <VDivider />
-
+          <v-divider />
           <v-card-title>
             <!-- Formulario -->
             <VForm class="mt-6">
               <v-row>
-                <!-- Documento de identidad -->
-                <v-col md="4" cols="12" class="col-etiqueta">
-                  <v-row>
-                    <v-text class="text-etiqueta">Codigo de empaste</v-text>
-
-                    <v-text-field
+                <!-- Codigo empaste -->
+                <v-col md="6" cols="12" class="col-etiqueta"> 
+                            
+                    <v-text class="text-etiqueta">Codigo de empaste : </v-text>
+                    <v-text
                       class="field-etiqueta"
                       v-model="codigo_emp"
                       variant="outlined"
                       persistent-hint
                       disabled
-                    ></v-text-field>
-                  </v-row>
+                    >
+                      {{ codigo_emp }}
+                    </v-text>
+              
                 </v-col>
                 <!-- Documento de identidad -->
-                <v-col class="col-etiqueta" md="5" cols="12">
-                  <v-row>
-                    <v-text class="text-etiqueta">Nombre completo</v-text>
+                <v-col class="col-etiqueta" md="4" cols="12">
+              
+                    <v-text class="text-etiqueta">Nombre completo : </v-text>
 
-                    <v-text-field
+                    <v-text
                       class="field-etiqueta"
                       v-model="nombrePersona"
                       variant="outlined"
                       persistent-hint
                       disabled
-                    ></v-text-field>
-                  </v-row>
+                    >
+                      {{ nombrePersona }} {{ apellidoPersona }}
+                    </v-text>
+            
                 </v-col>
                 <!-- Documento de identidad -->
-                <v-col class="col-etiqueta" md="3" cols="12">
-                  <v-row>
-                    <v-text class="text-etiqueta">C.I. N°</v-text>
+                <v-col class="col-etiqueta" md="6" cols="12">
+            
+                    <v-text class="text-etiqueta">C.I. N° : </v-text>
 
-                    <v-text-field
+                    <v-text
                       class="field-etiqueta"
                       v-model="num_documento"
                       variant="outlined"
                       persistent-hint
                       disabled
-                    ></v-text-field>
-                  </v-row>
+                    >
+                      {{ num_documento }}
+                    </v-text>
+            
                 </v-col>
               </v-row>
               <v-row>
                 <!-- Programa -->
-                <v-col md="4" cols="12" class="col-etiqueta">
-                  <v-row>
-                    <v-text class="text-etiqueta">Programa</v-text>
-                    <v-text-field
+                <v-col md="8" cols="12" class="col-etiqueta">
+     
+                    <v-text class="text-etiqueta">Programa : </v-text>
+
+                    <v-text
                       class="field-etiqueta"
                       v-model="programa"
                       variant="outlined"
                       persistent-hint
                       disabled
-                    ></v-text-field>
-                  </v-row>
+                    >
+                      {{ programa }}
+                    </v-text>
+          
                 </v-col>
                 <!-- Sede -->
-                <v-col class="col-etiqueta" md="4" cols="12">
-                  <v-row>
-                    <v-text class="text-etiqueta">Sede</v-text>
-                    <v-text-field
+                <v-col class="col-etiqueta" md="6" cols="12">
+            
+                    <v-text class="text-etiqueta">Sede : </v-text>
+
+                    <v-text
                       class="field-etiqueta"
                       v-model="sede"
                       variant="outlined"
                       persistent-hint
                       disabled
-                    ></v-text-field>
-                  </v-row>
+                    >
+                      {{ sede }}
+                    </v-text>
+          
                 </v-col>
                 <!-- Inicio de trámite -->
-                <v-col class="col-etiqueta" md="4" cols="12">
-                  <v-row>
-                    <v-text class="text-etiqueta">Inicio de trámite</v-text>
+                <v-col class="col-etiqueta" md="6" cols="12">
+   
+                    <v-text class="text-etiqueta">Inicio de trámite : </v-text>
 
-                    <v-text-field
+                    <v-text
                       class="field-etiqueta"
                       v-model="inicio_tramite"
                       variant="outlined"
                       persistent-hint
                       disabled
-                    ></v-text-field>
-                  </v-row>
+                    >
+                      {{ inicio_tramite }}
+                    </v-text>
+
                 </v-col>
               </v-row>
               <v-row>
                 <!-- Estado -->
-                <v-col md="4" cols="12" class="col-etiqueta">
-                  <v-row>
-                    <v-text class="text-etiqueta">Estado</v-text>
+                <v-col md="6" cols="12" class="col-etiqueta">
+                    <v-text class="text-etiqueta">Estado : </v-text>
 
-                    <v-text-field
+                    <v-text
                       class="field-etiqueta"
                       v-model="estado"
                       variant="outlined"
                       persistent-hint
                       disabled
-                    ></v-text-field>
-                  </v-row>
+                    >
+                      {{ estado }}
+                    </v-text>
                 </v-col>
                 <!-- Etapa del trámite -->
                 <v-col class="col-etiqueta" md="4" cols="12">
-                  <v-row>
-                    <v-text class="text-etiqueta">Etapa del trámite</v-text>
 
-                    <v-text-field
-                      class="text-field-results"
-                      v-model="etapa_tramite"
+                    <v-text class="text-etiqueta">Etapa del trámite : </v-text>
+
+                    <v-text
+                      class="field-etiqueta"
+                      v-model="estapa_tramite"
                       variant="outlined"
                       persistent-hint
                       disabled
-                    ></v-text-field>
-                  </v-row>
+                    >
+                      {{ etapa_tramite }}
+                    </v-text>
+
                 </v-col>
               </v-row>
               <v-row>
@@ -450,7 +430,7 @@ export default {
 
                     <div class="div-detalle" v-if="showDetails">
                       <h2>Proceso externo de titulación</h2>
-                      <div class="text-caption">Etapas</div>
+
                       <v-stepper v-model="activeStep">
                         <v-stepper-header>
                           <v-stepper-step
@@ -460,7 +440,7 @@ export default {
                             :step="index"
                             :class="{ 'step-selected': activeStep === index }"
                           >
-                            Etapa {{ index }}
+                             {{ index }}
                           </v-stepper-step>
                         </v-stepper-header>
 
@@ -498,35 +478,34 @@ export default {
     </v-row>
   </v-card>
   <v-card max-width="1200" flat class="mx-auto my-10" elevation="3">
-    <v-row max-width="1200">
-      <v-col>
-        <v-card>
-          <v-data-table-virtual
-            :headers="headers"
-            :items="etapasProcesoExTCollection"
-            :sort-by="[{ key: 'idRegCaja', order: 'asc' }]"
-            class="height: auto"
-          >
-            <template v-slot:top>
-              <v-toolbar flat>
-                <v-spacer></v-spacer>
-                <v-toolbar-title class="text-center">
-                  Proceso externo de titulación
-                </v-toolbar-title>
-                <v-spacer></v-spacer>
-              </v-toolbar>
-            </template>
+    <v-row justify="center">
+      <v-col cols="12" md="6">
+        <v-tabs v-model="activeTab" show-arrows class="d-flex justify-center">
+          <v-tab v-for="item in tabs" :key="item.icon" :value="item.tab">
+            <v-icon size="20" start :icon="item.icon" />
+            {{ item.title }}
+          </v-tab>
+        </v-tabs>
+      </v-col>
+    </v-row>
+    
+    <v-row max-width="1200" justify="center">
 
-            <template v-slot:no-data>
-              <v-btn color="primary" @click="initialize"> Reiniciar </v-btn>
-            </template>
-          </v-data-table-virtual>
-        </v-card>
+      <v-col cols="12" md="10">
+        <v-window v-model="activeTab" class="mt-5 disable-tab-transition" :touch="false">
+          <v-window-item value="tramite-esam">
+            <tramiteEsam />
+          </v-window-item>
+          <v-window-item value="tramite-personal">
+            <tramitePersonal />
+          </v-window-item>
+         
+        </v-window>
       </v-col>
     </v-row>
   </v-card>
-    <!-- Snackbar al momento de buscar a una persona por número de documento -->
-    <v-snackbar v-model="snackbar" :color="snackbarColor">
+  <!-- Snackbar al momento de buscar a una persona por número de documento -->
+  <v-snackbar v-model="snackbar" :color="snackbarColor">
     {{ nackbarText }}
     <template v-slot:actions>
       <v-btn color="white" variant="text" @click="snackbar = false">
@@ -541,34 +520,44 @@ export default {
   height: 56px;
   width: 100%;
 }
+
 .v-field__input {
-  min-height: 0 !important; /* Sobrescribe el min-height */
+  min-height: 0 !important;
+  /* Sobrescribe el min-height */
   padding-bottom: 0 !important;
   display: flex;
   align-items: center;
-  height: 40px; /* Ajusta la altura*/
+  height: 40px;
+  /* Ajusta la altura*/
 }
+
 .card {
   border-right: solid;
   border-width: solid;
   color: #cdcdcd;
 }
+
 .text-etiqueta {
-  padding: 2%;
+ color:#162D4B ;
 }
+
 .field-etiqueta {
   padding: 1;
 }
+
 .col-etiqueta {
   padding-right: 3%;
+  margin-bottom: 16px;
 }
 
 .card-detalle {
   padding: 2%;
 }
+
 .div-detalle {
   padding-top: 2%;
 }
+
 .v-toolbar-title {
   font-weight: bold;
 }
@@ -576,9 +565,10 @@ export default {
 .v-toolbar-title {
   font-weight: bold;
 }
+
 .step-selected {
-  background-color: #4caf50; /* Cambia a tu color preferido */
+  background-color: #4caf50;
+  /* Cambia a tu color preferido */
   color: white;
 }
-
 </style>
