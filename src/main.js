@@ -5,6 +5,7 @@ import vuex from 'vuex'
 import { createPinia } from 'pinia'
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
+import { loadFonts } from './plugins/webfontloader';
 
 //Vuetify
 
@@ -38,6 +39,8 @@ app.use(VueFire,{
     firebaseApp,
     modules: [VueFireAuth()]
 })
+
+loadFonts();
 
 app.component('VueDatePicker', VueDatePicker);
 app.use(vuetify)

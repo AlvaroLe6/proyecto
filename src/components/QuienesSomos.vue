@@ -5,7 +5,7 @@ import { ref } from 'vue';
 <template>
     <v-container fluid class="pa-0 gradient-background-q">
         <v-row class="d-flex justify-center align-center">
-        <v-col cols="12" class="text-center text-white ">
+        <v-col cols="12" class="text-center text-white  pa-10">
           <h1>NOSOTROS</h1>
         </v-col>
         </v-row>

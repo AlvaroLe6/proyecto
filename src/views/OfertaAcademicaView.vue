@@ -12,16 +12,17 @@ const activeTab = ref(route.params.tab);
 
 // tabs
 const tabs = [
+{
+    title: "SALUD",
+    icon: "ri-lock-line",
+    tab: "salud",
+  },
   {
     title: "INGENIERÍA",
     icon: "ri-group-line",
     tab: "ingenieria",
   },
-  {
-    title: "SALUD",
-    icon: "ri-lock-line",
-    tab: "salud",
-  },
+ 
   {
     title: "EMPRESARIAL",
     icon: "ri-group-line",
@@ -65,15 +66,16 @@ const tabs = [
     <v-row justify="center">
       <v-col cols="12" md="10">
         <v-window v-model="activeTab" class="mt-5 disable-tab-transition" :touch="false">
+          <v-window-item value="salud">
+            <OfertaAcademicaSalud />
+          </v-window-item>
           <v-window-item value="ingenieria">
             <OfertaAcademicaIng />
           </v-window-item>
           <v-window-item value="empresarial">
             <OfertaAcademicaEmp />
           </v-window-item>
-          <v-window-item value="salud">
-            <OfertaAcademicaSalud />
-          </v-window-item>
+
           <v-window-item value="social">
             <OfertaAcademicaSocial />
           </v-window-item>
@@ -146,16 +148,21 @@ const tabs = [
 
       </v-container>
     </v-row>
- <v-row>
-  <v-container>
-    <QuienesSomos />
-    </v-container>
- </v-row>
-  
+
+
   </div>
+  <v-row class="row-pading">
+
+</v-row>
+  <v-row>
+    <QuienesSomos />
+</v-row>
 
 </template>
 <style scoped>
+.row-pading{
+  padding: 50px;
+}
 .responsive-image {
   width: 100%;
   height: auto;

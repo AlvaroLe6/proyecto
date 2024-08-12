@@ -15,12 +15,12 @@ const activeTab = ref(route.params.tab);
 // tabs
 const tabs = [
   {
-    title: "TITULACIÓN CON ESAM",
+    title: "TRÁMITE CON ESAM",
     icon: "ri-group-line",
     tab: "tramite-esam",
   },
   {
-    title: "TITULACIÓN PERSONAL",
+    title: "TRÁMITE PERSONAL",
     icon: "ri-lock-line",
     tab: "tramite-personal",
   },
